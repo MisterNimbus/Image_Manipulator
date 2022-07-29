@@ -1,6 +1,6 @@
 #include "pnm.h"
 #include <memory>
-
+#include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -10,26 +10,36 @@ pnm::pnm(enum pnm::pnmType type):pnmType(type){
 pnm::~pnm(){
 }
 
-
 ///////////////////////////////////////////////////////////////////////////
 
-pbm::pbm(int width, int height): pnm(pnm::pbm), width(width), height(height){   
+pbm::pbm(int width, int height): pnm(pnm::pbm), width(width), height(height){
+    this->map.resize(height);
 }
 
 pbm::~pbm(){
 }
 
 int pbm::format(){
-return 0;
-
+    return 0;
 }
+
+std::string pbm::print(){
+std::string result = "";
+    for(int y=0; y < this->height; y++){
+        for (int x = 0; x< this->width; x++){
+            result += this->map[y][x]->output() + " - ";
+        }
+        result += "\n";
+    }
+return result;
+}
+
 int pbm::getMagicNumber(){
     return 4; // P4 for BINARY - P1 for ASCII
 }
 
-void pbm::pushToRow(int targetRowNumber, bool value){
-    auto pixel = std::make_unique<BINARYpixel>(new BINARYpixel(value));
-    this->map[targetRowNumber].push_back(std::move(pixel));
+void pbm::pushToRow(int targetRow, bool value){
+    this->map[targetRow].push_back(std::move(std::make_unique<BINARYpixel>(value)));
 }
 
 ///////////////////////////////////////////////////////////////////////////

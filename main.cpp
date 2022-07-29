@@ -15,8 +15,9 @@ int main(){
     auto pbmTest = std::make_unique<pbm>(5,5);
     for ( int y = 0; y < pbmTestArrayHeight; y++){
         for ( int x = 0; x < pbmTestArrayWidth; x++){
-            pbmTest->pushToRow(y, pbmTestArray[x][y]);
+            pbmTest->pushToRow(y, pbmTestArray[y][x]);
         }
     }
+    std::cout << pbmTest->print();
     return 0;
 }

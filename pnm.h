@@ -17,6 +17,7 @@ public:
     int save(std::string targetFolder);
     static std::unique_ptr<pnm> read(std::string sourceFolder);
     virtual int format() = 0;
+    virtual std::string print() = 0;
 private:
     pnmType pnmType;
 };
@@ -27,10 +28,11 @@ public:
     ~pbm();
     int format() override;
     int getMagicNumber() override;
-    void pushToRow(int targetRowNumber, bool value);
+    void pushToRow(int targetRow, bool value);
+    std::string print() override;
 private:
     int width, height;
-    std::vector< std::vector< std::unique_ptr<BINARYpixel>>> map;
+    std::vector<std::vector<std::unique_ptr<BINARYpixel>>> map = {};
 };
 
 class pgm : pnm{
