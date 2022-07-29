@@ -46,6 +46,12 @@ std::uint8_t RGBpixel::format(){
     return std::uint8_t(this->getR()) + std::uint8_t(this->getG()) + std::uint8_t(this->getB());
 }
 
+std::string RGBpixel::output() {
+    std::string result;
+    result = std::to_string(this->R) + " " + std::to_string(this->G) + " " + std::to_string(this->B);
+    return result;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
 GRAYpixel::GRAYpixel(int gray):pixel(), gray( gray )
@@ -68,6 +74,12 @@ std::uint8_t GRAYpixel::format(){
     return std::uint8_t(this->getGray());
 }
 
+std::string GRAYpixel::output() {
+    std::string result;
+    result = std::to_string(this->gray);
+    return result;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
 BINARYpixel::BINARYpixel(bool bit):pixel(), bit( bit )
@@ -88,4 +100,10 @@ void BINARYpixel::setBit(bool newBit){
 
 std::uint8_t BINARYpixel::format(){
     return std::uint8_t(this->getBit());
+}
+
+std::string BINARYpixel::output() {
+    std::string result;
+    result = std::to_string(this->bit);
+    return result;
 }

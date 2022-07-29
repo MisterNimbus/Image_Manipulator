@@ -8,8 +8,9 @@ class pixel {
 private:
 public:
     pixel();
-    ~pixel();
+    virtual ~pixel();
     virtual std::uint8_t format() = 0; 
+    virtual std::string output() =0;
 };
 
 
@@ -29,6 +30,7 @@ public:
     void setG(int newG);
     void setB(int newB);
     std::uint8_t format() override;
+    std::string output() override;
 };
 
 class GRAYpixel : pixel
@@ -41,6 +43,7 @@ public:
     int getGray();
     void setGray(int newGray);
     std::uint8_t format() override;
+    std::string output() override;
 };
 
 class BINARYpixel  : pixel
@@ -53,6 +56,7 @@ public:
     int getBit();
 void setBit(bool newBit);
     std::uint8_t format() override;
+    std::string output() override;
 };
 
 #endif

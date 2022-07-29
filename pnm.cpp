@@ -1,4 +1,6 @@
 #include "pnm.h"
+#include <memory>
+
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -17,11 +19,16 @@ pbm::pbm(int width, int height): pnm(pnm::pbm), width(width), height(height){
 pbm::~pbm(){
 }
 
+int pbm::format(){
+return 0;
+
+}
 int pbm::getMagicNumber(){
     return 4; // P4 for BINARY - P1 for ASCII
 }
 
-void pbm::pushToRow(int targetRowNumber, std::unique_ptr<BINARYpixel> pixel){
+void pbm::pushToRow(int targetRowNumber, bool value){
+    auto pixel = std::make_unique<BINARYpixel>(new BINARYpixel(value));
     this->map[targetRowNumber].push_back(std::move(pixel));
 }
 
@@ -33,6 +40,9 @@ pgm::pgm(int width, int height, int range): pnm(pnm::pgm), width(width), height(
 pgm::~pgm(){
 }
 
+int pgm::format(){
+return 0;
+}
 int pgm::getMagicNumber(){
     return 5; // P5 for BINARY - P2 for ASCII
 }
@@ -47,6 +57,11 @@ ppm::ppm(int width, int height, int range): pnm(pnm::ppm), width(width), height(
 }
 
 ppm::~ppm(){
+}
+
+int ppm::format(){
+return 0;
+
 }
 
 int ppm::getMagicNumber(){
