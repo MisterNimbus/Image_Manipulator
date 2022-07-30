@@ -24,14 +24,14 @@ int pbm::format(){
 }
 
 std::string pbm::print(){
-std::string result = "";
-    for(int y=0; y < this->height; y++){
-        for (int x = 0; x< this->width; x++){
-            result += this->map[y][x]->output() + " - ";
+    std::string result = "";
+        for(int y=0; y < this->height; y++){
+            for (int x = 0; x< this->width; x++){
+                result += this->map[y][x]->output() + " - ";
+            }
+            result += "\n";
         }
-        result += "\n";
-    }
-return result;
+    return result;
 }
 
 int pbm::getMagicNumber(){
@@ -45,6 +45,7 @@ void pbm::pushToRow(int targetRow, bool value){
 ///////////////////////////////////////////////////////////////////////////
 
 pgm::pgm(int width, int height, int range): pnm(pnm::pgm), width(width), height(height), range(range){   
+    this->map.resize(height);
 }
 
 pgm::~pgm(){
@@ -53,17 +54,30 @@ pgm::~pgm(){
 int pgm::format(){
 return 0;
 }
+
+std::string pgm::print(){
+    std::string result = "";
+        for(int y=0; y < this->height; y++){
+            for (int x = 0; x< this->width; x++){
+                result += this->map[y][x]->output() + " - ";
+            }
+            result += "\n";
+        }
+    return result;
+}
+
 int pgm::getMagicNumber(){
     return 5; // P5 for BINARY - P2 for ASCII
 }
 
-void pgm::pushToRow(int targetRowNumber, std::unique_ptr<GRAYpixel> pixel){
-    this->map[targetRowNumber].push_back(std::move(pixel));
+void pgm::pushToRow(int targetRow, int grayValue){
+    this->map[targetRow].push_back(std::move(std::make_unique<GRAYpixel>(grayValue)));
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
 ppm::ppm(int width, int height, int range): pnm(pnm::ppm), width(width), height(height), range(range){   
+    this->map.resize(height);
 }
 
 ppm::~ppm(){
@@ -74,10 +88,22 @@ return 0;
 
 }
 
+
+std::string ppm::print(){
+    std::string result = "";
+        for(int y=0; y < this->height; y++){
+            for (int x = 0; x< this->width; x++){
+                result += this->map[y][x]->output() + " - ";
+            }
+            result += "\n";
+        }
+    return result;
+}
+
 int ppm::getMagicNumber(){
     return 6; // P6 for BINARY - P3 for ASCII
 }
 
-void ppm::pushToRow(int targetRowNumber, std::unique_ptr<RGBpixel> pixel){
-    this->map[targetRowNumber].push_back(std::move(pixel));
+void ppm::pushToRow(int targetRow, int valueR, int valueG, int valueB){
+    this->map[targetRow].push_back(std::move(std::make_unique<RGBpixel>(valueR,valueG,valueB)));
 }

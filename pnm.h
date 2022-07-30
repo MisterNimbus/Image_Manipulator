@@ -40,8 +40,9 @@ public:
     pgm(int width, int height, int range);
     ~pgm();
     int format() override;
+    std::string print();
     int getMagicNumber() override;
-    void pushToRow(int targetRowNumber, std::unique_ptr<GRAYpixel> pixel);
+    void pushToRow(int targetRow, int grayValue);
 private:
     int width, height, range;
     std::vector< std::vector< std::unique_ptr<GRAYpixel>>> map;
@@ -52,8 +53,9 @@ public:
     ppm(int width, int height, int range);
     ~ppm();
     int format() override;
+    std::string print();
     int getMagicNumber() override;
-    void pushToRow(int targetRowNumber, std::unique_ptr<RGBpixel> pixel);
+    void pushToRow(int targetRow,int valueR, int valueG, int valueB);
 private:
     int width, height, range;
     std::vector< std::vector< std::unique_ptr< RGBpixel>>> map;
