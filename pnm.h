@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <stdio.h>
-#include <ostream>
+#include <iostream>
 #include "./pixel.h"
 #include <memory>
 
@@ -13,7 +13,7 @@ public:
     enum pnmType{ pbm, pgm, ppm };
     pnm(enum pnm::pnmType type);
     virtual ~pnm();
-    virtual int getMagicNumber() = 0;
+    virtual std::string getMagicNumber() = 0;
     int save(std::string targetFolder);
     static std::unique_ptr<pnm> read(std::string sourceFolder);
     virtual int format() = 0;
@@ -27,8 +27,9 @@ public:
     pbm(int width, int height);
     ~pbm();
     int format() override;
-    int getMagicNumber() override;
+    std::string getMagicNumber() override;
     void pushToRow(int targetRow, bool value);
+    friend std::ostream& operator<<(std::ostream& os, pbm& pbm);
     std::string print() override;
 private:
     int width, height;
@@ -41,7 +42,8 @@ public:
     ~pgm();
     int format() override;
     std::string print();
-    int getMagicNumber() override;
+    friend std::ostream& operator<<(std::ostream& os, pgm& pgm);
+    std::string getMagicNumber() override;
     void pushToRow(int targetRow, int grayValue);
 private:
     int width, height, range;
@@ -54,7 +56,8 @@ public:
     ~ppm();
     int format() override;
     std::string print();
-    int getMagicNumber() override;
+    friend std::ostream& operator<<(std::ostream& os, ppm& ppm);
+    std::string getMagicNumber() override;
     void pushToRow(int targetRow,int valueR, int valueG, int valueB);
 private:
     int width, height, range;

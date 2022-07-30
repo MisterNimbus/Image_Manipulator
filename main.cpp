@@ -39,8 +39,8 @@ int main(){
         }
     }
     
-    std::cout  << std::endl <<"pbm:" << std::endl << pbmTest->print();
-    std::cout  << std::endl <<"pgm:" <<  std::endl << pgmTest->print();
-    std::cout  << std::endl <<"ppm:" << std::endl << ppmTest->print();
+    std::cout  << std::endl <<"pbm:" << std::endl << *pbmTest;
+    std::cout  << std::endl <<"pgm:" <<  std::endl << *pgmTest;
+    std::cout  << std::endl <<"ppm:" << std::endl << *ppmTest;
     return 0;
 }

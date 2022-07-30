@@ -34,8 +34,20 @@ std::string pbm::print(){
     return result;
 }
 
-int pbm::getMagicNumber(){
-    return 4; // P4 for BINARY - P1 for ASCII
+std::ostream& operator<<(std::ostream& os, pbm& pnm){
+        os << pnm.getMagicNumber() << std::endl;
+        os << pnm.height << " " << pnm.width << std::endl;
+        for(int y=0; y < pnm.height; y++){
+            for (int x = 0; x< pnm.width; x++){
+                os << pnm.map[y][x]->output() << " - ";
+            }
+            os << std::endl;
+        }
+    return os;
+}
+
+std::string pbm::getMagicNumber(){
+    return "P4"; // P4 for BINARY - P1 for ASCII
 }
 
 void pbm::pushToRow(int targetRow, bool value){
@@ -66,8 +78,20 @@ std::string pgm::print(){
     return result;
 }
 
-int pgm::getMagicNumber(){
-    return 5; // P5 for BINARY - P2 for ASCII
+std::ostream& operator<<(std::ostream& os, pgm& pnm){
+        os << pnm.getMagicNumber() << std::endl;
+        os << pnm.height << " " << pnm.width << " " << pnm.range << std::endl;
+        for(int y=0; y < pnm.height; y++){
+            for (int x = 0; x< pnm.width; x++){
+                os << pnm.map[y][x]->output() << " - ";
+            }
+            os << std::endl;
+        }
+    return os;
+}
+
+std::string pgm::getMagicNumber(){
+    return "P5"; // P5 for BINARY - P2 for ASCII
 }
 
 void pgm::pushToRow(int targetRow, int grayValue){
@@ -100,8 +124,20 @@ std::string ppm::print(){
     return result;
 }
 
-int ppm::getMagicNumber(){
-    return 6; // P6 for BINARY - P3 for ASCII
+std::ostream& operator<<(std::ostream& os, ppm& pnm){
+        os << pnm.getMagicNumber() << std::endl;
+        os << pnm.height << " " << pnm.width << " " << pnm.range << std::endl;
+        for(int y=0; y < pnm.height; y++){
+            for (int x = 0; x< pnm.width; x++){
+                os << pnm.map[y][x]->output() << " - ";
+            }
+            os << std::endl;
+        }
+    return os;
+}
+
+std::string ppm::getMagicNumber(){
+    return "P6"; // P6 for BINARY - P3 for ASCII
 }
 
 void ppm::pushToRow(int targetRow, int valueR, int valueG, int valueB){
