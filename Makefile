@@ -11,4 +11,4 @@ pnm.o: pnm.cpp pnm.h
 pixel.o: pixel.cpp pixel.h
 	$(CC) $(CFLAGS) -c pixel.cpp
 clean:
-	rm -rf *.o main.exe
+	rm -rf *.o main.exe *.ppm *.pbm *.pgm

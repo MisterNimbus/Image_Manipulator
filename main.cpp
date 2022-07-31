@@ -19,7 +19,6 @@ int main(){
     int ppmTestArrayHeight = 2;
     int ppmTestArray[2][2][3] = {{{1,0,0},{0,1,0}},{{0,0,0},{1,1,1}}};
     
-    
     auto pbmTest = std::make_unique<pbm>(5,5);
     for ( int y = 0; y < pbmTestArrayHeight; y++){
         for ( int x = 0; x < pbmTestArrayWidth; x++){
@@ -40,7 +39,16 @@ int main(){
     }
     
     std::cout  << std::endl <<"pbm:" << std::endl << *pbmTest;
-    std::cout  << std::endl <<"pgm:" <<  std::endl << *pgmTest;
+    std::cout  << std::endl <<"pgm:" <<  std::endl <<*pgmTest;
     std::cout  << std::endl <<"ppm:" << std::endl << *ppmTest;
+
+    std::string targetFile1 = "pbmTest.pbm";
+    std::cout << pbmTest->save(&targetFile1);
+    std::string targetFile2 = "pgmTest.pgm";
+    std::cout << pgmTest->save(&targetFile2);
+    std::string targetFile3 = "ppmTest.ppm";
+    std::cout << ppmTest->save(&targetFile3);
+
+    system("pnmtopng pbmTest.pbm>pbmTest.png");
     return 0;
 }

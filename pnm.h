@@ -6,6 +6,7 @@
 #include <iostream>
 #include "./pixel.h"
 #include <memory>
+#include <bitset>
 
 class pnm
 {
@@ -30,6 +31,7 @@ public:
     std::string getMagicNumber() override;
     void pushToRow(int targetRow, bool value);
     friend std::ostream& operator<<(std::ostream& os, pbm& pbm);
+    int save(std::string* fileName);
     std::string print() override;
 private:
     int width, height;
@@ -43,6 +45,7 @@ public:
     int format() override;
     std::string print();
     friend std::ostream& operator<<(std::ostream& os, pgm& pgm);
+    int save(std::string* fileName);
     std::string getMagicNumber() override;
     void pushToRow(int targetRow, int grayValue);
 private:
@@ -57,6 +60,7 @@ public:
     int format() override;
     std::string print();
     friend std::ostream& operator<<(std::ostream& os, ppm& ppm);
+    int save(std::string* fileName);
     std::string getMagicNumber() override;
     void pushToRow(int targetRow,int valueR, int valueG, int valueB);
 private:
