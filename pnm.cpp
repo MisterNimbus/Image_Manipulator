@@ -5,15 +5,83 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-pnm::pnm(enum pnm::pnmType type):pnmType(type){
+pnm::pnm(){
 }
 
 pnm::~pnm(){
 }
 
+std::unique_ptr<pnm> pnm::read(std::string * sourceFile){
+    std::string pnmMagicNumberBuffer = "", widthBuffer="", heightBuffer="", rangeBuffer="";
+    
+    std::fstream file;
+    file.open(* sourceFile, std::fstream::in | std::fstream::binary);
+    file >> pnmMagicNumberBuffer;
+    file >> widthBuffer;
+    file >> heightBuffer;
+
+    if(pnmMagicNumberBuffer == "P4"){ // Silem mi bastan yazalim su satiri 
+//        std::unique_ptr<pnm> ase(std::unique_ptr<pbm::pnm>(widthBuffer,heightBuffer));
+    } // daha yazmadim sonunu
+    else if (pnmMagicNumberBuffer == "P5"){ // BU PGM
+        file >> rangeBuffer;
+    }
+    else if (pnmMagicNumberBuffer == "P6"){ //
+        file >> rangeBuffer;
+    }
+}
+
+
+/*
+    pnm->pnmMagicNumber = pnmMagicNumberBuffer;
+    pnm->width = stoi(widthBuffer);
+    pnm->height = stoi(heightBuffer);
+    pnm->range = stoi(rangeBuffer);
+
+    pnmFile >> noskipws;
+
+    vector<vector<pixel>> pixelMap;
+    vector<pixel> pixelRow;
+    pixel pixelBuffer;
+    unsigned char Red, Green, Blue;
+
+    for(int y=0; y < pnm->height; y++)
+        {
+        for(int x=0; x < pnm->width; x++){
+            
+            pnmFile >> Red;
+            if((int)Red == 10){
+                Red = 11;
+            }
+            pixelBuffer.R = (int)Red;
+
+            
+            pnmFile >> Green;
+            if((int)Green == 10){
+                Green = 11;
+            }
+            pixelBuffer.G = (int) Green;
+
+            
+            pnmFile >> Blue;
+            if((int)Blue == 10){
+                Blue = 11;
+            }
+            pixelBuffer.B = (int)Blue;
+            
+
+            pixelRow.push_back(pixelBuffer);
+        }
+        pixelMap.push_back(pixelRow);
+        pixelRow = {};
+    }
+    pnm->pixelMap=pixelMap;
+    pnmFile.close();
+*/
+
 ///////////////////////////////////////////////////////////////////////////
 
-pbm::pbm(int width, int height): pnm(pnm::pbm), width(width), height(height){
+pbm::pbm(int width, int height): pnm(), width(width), height(height){
     this->map.resize(height);
 }
 
@@ -88,7 +156,7 @@ void pbm::pushToRow(int targetRow, bool value){
 
 ///////////////////////////////////////////////////////////////////////////
 
-pgm::pgm(int width, int height, int range): pnm(pnm::pgm), width(width), height(height), range(range){   
+pgm::pgm(int width, int height, int range): pnm(), width(width), height(height), range(range){   
     this->map.resize(height);
 }
 
@@ -151,7 +219,7 @@ void pgm::pushToRow(int targetRow, int grayValue){
 
 ///////////////////////////////////////////////////////////////////////////
 
-ppm::ppm(int width, int height, int range): pnm(pnm::ppm), width(width), height(height), range(range){   
+ppm::ppm(int width, int height, int range): pnm(), width(width), height(height), range(range){   
     this->map.resize(height);
 }
 

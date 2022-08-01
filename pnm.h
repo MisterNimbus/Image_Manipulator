@@ -11,19 +11,17 @@
 class pnm
 {
 public:
-    enum pnmType{ pbm, pgm, ppm };
-    pnm(enum pnm::pnmType type);
+    pnm();
     virtual ~pnm();
     virtual std::string getMagicNumber() = 0;
     int save(std::string targetFolder);
-    static std::unique_ptr<pnm> read(std::string sourceFolder);
+    static std::unique_ptr<pnm> read(std::string * sourceFolder);
     virtual int format() = 0;
     virtual std::string print() = 0;
 private:
-    pnmType pnmType;
 };
 
-class pbm : pnm{
+class pbm : public pnm{
 public:
     pbm(int width, int height);
     ~pbm();
@@ -38,7 +36,7 @@ private:
     std::vector<std::vector<std::unique_ptr<BINARYpixel>>> map = {};
 };
 
-class pgm : pnm{
+class pgm : public pnm{
 public:
     pgm(int width, int height, int range);
     ~pgm();
@@ -53,7 +51,7 @@ private:
     std::vector< std::vector< std::unique_ptr<GRAYpixel>>> map;
 };
 
-class ppm : pnm{
+class ppm : public pnm{
 public:
     ppm(int width, int height, int range);
     ~ppm();
