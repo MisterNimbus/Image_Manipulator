@@ -2,8 +2,10 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-pixel::pixel(){
-
+pixel::pixel(int val1, int val2, int val3){
+    values[0] = val1;
+    values[1] = val2;
+    values[2] = val3;
 }
 
 pixel::~pixel(){
@@ -12,98 +14,95 @@ pixel::~pixel(){
 
 ///////////////////////////////////////////////////////////////////////////
 
-RGBpixel::RGBpixel(int R, int G, int B):pixel(), R( R ), G( G ), B( B ){
+std::uint8_t pixel::formatRGB(){
+    return std::uint8_t(this->values[0]) + std::uint8_t(this->values[1]) + std::uint8_t(this->values[2]);
 }
 
-RGBpixel::~RGBpixel(){
-}
-
-int RGBpixel::getR(){
-    return this->R;
-    }
-
-int RGBpixel::getG(){
-    return this->G;
-    }
-
-int RGBpixel::getB(){
-    return this->B;
-    }
-
-void RGBpixel::setR(int newR){
-    this->R = newR;
-    }
-
-void RGBpixel::setG(int newG){
-    this->G = newG;
-    }
-
-void RGBpixel::setB(int newB){
-    this->B = newB;
-    }
-
-std::uint8_t RGBpixel::format(){
-    return std::uint8_t(this->getR()) + std::uint8_t(this->getG()) + std::uint8_t(this->getB());
-}
-
-std::string RGBpixel::output() {
+std::string pixel::outputRGB() {
     std::string result;
-    result = std::to_string(this->R) + " " + std::to_string(this->G) + " " + std::to_string(this->B);
+    result = std::to_string(this->values[0]) + " " + std::to_string(this->values[1]) + " " + std::to_string(this->values[2]);
     return result;
+}
+
+void pixel::setRGB(int R, int G, int B){
+    values[0] = R;
+    values[1] = G;
+    values[2] = B;
+}
+
+void pixel::setR(int R){
+    values[0] = R;
+}
+
+void pixel::setG(int G){
+    values[1] = G;
+}
+
+void pixel::setB(int B){
+    values[2] = B;
+}
+
+int pixel::getR(){
+    return values[0];
+}
+
+int pixel::getG(){
+    return values[1];
+}
+
+int pixel::getB(){
+    return values[2];
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-GRAYpixel::GRAYpixel(int gray):pixel(), gray( gray )
-    {
-    }
 
-GRAYpixel::~GRAYpixel()
-    {
-    }
-
-int GRAYpixel::getGray(){
-    return this->gray;
-    }
-
-void GRAYpixel::setGray(int newGray){
-    this->gray = newGray;
-    }
-
-std::uint8_t GRAYpixel::format(){
-    return std::uint8_t(this->getGray());
+std::uint8_t pixel::formatGRAY(){
+    return std::uint8_t(this->values[0]);
 }
 
-std::string GRAYpixel::output() {
+std::string pixel::outputGRAY() {
     std::string result;
-    result = std::to_string(this->gray);
+    result = std::to_string(this->values[0]);
     return result;
+}
+
+void pixel::setGRAY(int gray){
+    values[0] = gray;
+}
+
+int pixel::getGRAY(){
+    return values[0];
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-BINARYpixel::BINARYpixel(bool bit):pixel(), bit( bit )
-    {
-    }
-
-BINARYpixel::~BINARYpixel()
-    {
-    }
-
-int BINARYpixel::getBit(){
-    return this->bit;
-    }
-
-void BINARYpixel::setBit(bool newBit){
-    this->bit = newBit;
-    }
-
-std::uint8_t BINARYpixel::format(){
-    return std::uint8_t(this->getBit());
+std::uint8_t pixel::formatBINARY(){
+    return std::uint8_t(this->values[0]);
 }
 
-std::string BINARYpixel::output() {
+std::string pixel::outputBINARY() {
     std::string result;
-    result = std::to_string(this->bit);
+    result = std::to_string(this->values[0]);
     return result;
+}
+
+void pixel::setBINARY(bool bit){
+    if(bit==false){
+        values[0]=0;
+    }
+    else
+    {
+        values[0]=1;
+    }
+}
+
+bool pixel::getBit(){
+    if(values[0]==0){
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }

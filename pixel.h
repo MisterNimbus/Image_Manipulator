@@ -7,56 +7,26 @@
 class pixel {
 private:
 public:
-    pixel();
-    virtual ~pixel();
-    virtual std::uint8_t format() = 0; 
-    virtual std::string output() =0;
-};
-
-
-class RGBpixel : pixel
-{
-private:
-    int R;
-    int G;
-    int B;
-public:
-    RGBpixel(int R = 0, int G = 0, int B = 0);
-    ~RGBpixel();
+    pixel(int val1 = 0, int val2 =0, int val3=0);
+    ~pixel();
+    std::uint8_t formatRGB(); 
+    std::uint8_t formatGRAY(); 
+    std::uint8_t formatBINARY(); 
+    std::string outputRGB();
+    std::string outputGRAY();
+    std::string outputBINARY();
+    void setRGB(int R, int G, int B);
+    void setR(int R);
+    void setG(int G);
+    void setB(int B);
+    void setGRAY(int gray);
+    void setBINARY(bool bit);
     int getR();
     int getG();
     int getB();
-    void setR(int newR);
-    void setG(int newG);
-    void setB(int newB);
-    std::uint8_t format() override;
-    std::string output() override;
+    int getGRAY();
+    bool getBit();
+protected:
+    int values[3] = {0,0,0};
 };
-
-class GRAYpixel : pixel
-{
-private:
-    int gray;
-public:
-    GRAYpixel(int gray = 0);
-    ~GRAYpixel();
-    int getGray();
-    void setGray(int newGray);
-    std::uint8_t format() override;
-    std::string output() override;
-};
-
-class BINARYpixel  : pixel
-{
-private:
-    bool bit;
-public:
-    BINARYpixel(bool bit = false);
-    ~BINARYpixel();
-    int getBit();
-void setBit(bool newBit);
-    std::uint8_t format() override;
-    std::string output() override;
-};
-
 #endif

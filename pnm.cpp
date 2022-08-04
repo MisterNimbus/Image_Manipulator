@@ -5,98 +5,113 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-pnm::pnm(){
+pnm::pnm(int width, int height,int range):width(width),height(height),range(range){
 }
 
 pnm::~pnm(){
 }
 
-std::unique_ptr<pnm> pnm::read(std::string * sourceFile){
-    std::string pnmMagicNumberBuffer = "", widthBuffer="", heightBuffer="", rangeBuffer="";
+pnm * pnm::read(std::string * sourceFile){
     
+    std::string pnmMagicNumberBuffer = "", widthBuffer="", heightBuffer="", rangeBuffer="";
     std::fstream file;
     file.open(* sourceFile, std::fstream::in | std::fstream::binary);
+    if(file.fail()){
+        std::cout << std::endl << std::endl << "FAILED" << std::endl ;
+    }
     file >> pnmMagicNumberBuffer;
     file >> widthBuffer;
     file >> heightBuffer;
 
-    if(pnmMagicNumberBuffer == "P4"){ // Silem mi bastan yazalim su satiri 
-//        std::unique_ptr<pnm> ase(std::unique_ptr<pbm::pnm>(widthBuffer,heightBuffer));
-    } // daha yazmadim sonunu
+    if(pnmMagicNumberBuffer == "P4"){
+        pnm * PBMptr = new pbm(stoi(widthBuffer),stoi(heightBuffer));
+            unsigned char B;
+            std::bitset<8> bitset;
+            for(int y=0; y < stoi(heightBuffer); y++){
+                for(int x=0; x < stoi(widthBuffer); x+=8){
+                    file >> B;
+                    bitset = int(B);
+                    int i = 7;
+                    int k = 0;
+                    if(x>=stoi(widthBuffer)){
+                        k = x - stoi(widthBuffer);
+                    }
+                    for(i=7;i>=k;i--){
+                        if(bitset[i]==true){
+                            PBMptr->pushToRow(y,1);
+                        }else{
+                            PBMptr->pushToRow(y,0);
+                        }
+                    }
+                }
+            }
+        file.close();
+        std::cout << &PBMptr;
+        return PBMptr;
+    }
     else if (pnmMagicNumberBuffer == "P5"){ // BU PGM
         file >> rangeBuffer;
+        pnm * NEWpgm(new pgm(stoi(widthBuffer),stoi(heightBuffer),stoi(rangeBuffer)));
+        int gray;
+        for(int y=0; y < stoi(heightBuffer); y++){
+            for(int x=0; x < stoi(widthBuffer); x++){
+            file >> gray;
+            if(gray == 10){gray = 11;}
+            std::cout << gray;
+            NEWpgm->pushToRow(y,gray);
+            }
+        }
+        file.close();
+        return NEWpgm;
     }
     else if (pnmMagicNumberBuffer == "P6"){ //
         file >> rangeBuffer;
+        pnm * NEWppm(new ppm(stoi(widthBuffer),stoi(heightBuffer),stoi(rangeBuffer)));
+        int R,G,B;
+        for(int y=0; y < stoi(heightBuffer); y++){
+            for(int x=0; x < stoi(widthBuffer); x++){
+            file >> R;
+            if(R == 10){R = 11;}            
+            file >> G;
+            if(G == 10){G = 11;}
+            file >> B;
+            if(B == 10){B = 11;}
+            NEWppm->pushToRow(y,R,G,B);
+            }
+        }
+        file.close();
+        return NEWppm;
     }
+    return NULL;
+}
+
+std::string pnm::print(){
+    std::string result = "";
+        for(int y=0; y < this->height; y++){
+            for (int x = 0; x< this->width; x++){
+                result += this->map[y][x]->outputRGB() + " - ";
+            }
+            result += "\n";
+        }
+    return result;
 }
 
 
-/*
-    pnm->pnmMagicNumber = pnmMagicNumberBuffer;
-    pnm->width = stoi(widthBuffer);
-    pnm->height = stoi(heightBuffer);
-    pnm->range = stoi(rangeBuffer);
-
-    pnmFile >> noskipws;
-
-    vector<vector<pixel>> pixelMap;
-    vector<pixel> pixelRow;
-    pixel pixelBuffer;
-    unsigned char Red, Green, Blue;
-
-    for(int y=0; y < pnm->height; y++)
-        {
-        for(int x=0; x < pnm->width; x++){
-            
-            pnmFile >> Red;
-            if((int)Red == 10){
-                Red = 11;
-            }
-            pixelBuffer.R = (int)Red;
-
-            
-            pnmFile >> Green;
-            if((int)Green == 10){
-                Green = 11;
-            }
-            pixelBuffer.G = (int) Green;
-
-            
-            pnmFile >> Blue;
-            if((int)Blue == 10){
-                Blue = 11;
-            }
-            pixelBuffer.B = (int)Blue;
-            
-
-            pixelRow.push_back(pixelBuffer);
-        }
-        pixelMap.push_back(pixelRow);
-        pixelRow = {};
-    }
-    pnm->pixelMap=pixelMap;
-    pnmFile.close();
-*/
-
 ///////////////////////////////////////////////////////////////////////////
 
-pbm::pbm(int width, int height): pnm(), width(width), height(height){
+pbm::pbm(int width, int height): pnm(width,height,1){
     this->map.resize(height);
 }
 
 pbm::~pbm(){
 }
 
-int pbm::format(){
-    return 0;
-}
 
 std::string pbm::print(){
     std::string result = "";
         for(int y=0; y < this->height; y++){
             for (int x = 0; x< this->width; x++){
-                result += this->map[y][x]->output() + " - ";
+                result += this->map[y][x]->getBit() + " - ";
             }
             result += "\n";
         }
@@ -139,7 +154,7 @@ std::ostream& operator<<(std::ostream& os, pbm& pnm){
         os << pnm.height << " " << pnm.width << std::endl;
         for(int y=0; y < pnm.height; y++){
             for (int x = 0; x< pnm.width; x++){
-                os << pnm.map[y][x]->output() << " - ";
+                os << pnm.map[y][x]->getBit() << " - ";
             }
             os << std::endl;
         }
@@ -150,22 +165,19 @@ std::string pbm::getMagicNumber(){
     return "P4"; // P4 for BINARY - P1 for ASCII
 }
 
-void pbm::pushToRow(int targetRow, bool value){
-    this->map[targetRow].push_back(std::move(std::make_unique<BINARYpixel>(value)));
+void pbm::pushToRow(int targetRow, int val1, int val2, int val3){
+    this->map[targetRow].push_back(std::move(std::make_unique<pixel>(val1)));
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-pgm::pgm(int width, int height, int range): pnm(), width(width), height(height), range(range){   
+pgm::pgm(int width, int height, int range): pnm(width,height,range){   
     this->map.resize(height);
 }
 
 pgm::~pgm(){
 }
 
-int pgm::format(){
-return 0;
-}
 
 int pgm::save(std::string* fileName){
     std::ofstream file;
@@ -178,7 +190,7 @@ int pgm::save(std::string* fileName){
     file << ' ';
     for(int y = 0; y < this->height; y++){
         for(int x = 0; x < this->width; x++){
-            file << uint8_t(this->map[y][x]->getGray());
+            file << uint8_t(this->map[y][x]->getGRAY());
         }   
     }
     file.close();
@@ -190,7 +202,7 @@ std::string pgm::print(){
     std::string result = "";
         for(int y=0; y < this->height; y++){
             for (int x = 0; x< this->width; x++){
-                result += this->map[y][x]->output() + " - ";
+                result += this->map[y][x]->outputGRAY() + " - ";
             }
             result += "\n";
         }
@@ -202,7 +214,7 @@ std::ostream& operator<<(std::ostream& os, pgm& pnm){
         os << pnm.height << " " << pnm.width << " " << pnm.range << std::endl;
         for(int y=0; y < pnm.height; y++){
             for (int x = 0; x< pnm.width; x++){
-                os << pnm.map[y][x]->output() << " - ";
+                os << pnm.map[y][x]->outputGRAY() << " - ";
             }
             os << std::endl;
         }
@@ -213,22 +225,17 @@ std::string pgm::getMagicNumber(){
     return "P5"; // P5 for BINARY - P2 for ASCII
 }
 
-void pgm::pushToRow(int targetRow, int grayValue){
-    this->map[targetRow].push_back(std::move(std::make_unique<GRAYpixel>(grayValue)));
+void pgm::pushToRow(int targetRow, int val1, int val2, int val3){
+    this->map[targetRow].push_back(std::move(std::make_unique<pixel>(val1)));
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-ppm::ppm(int width, int height, int range): pnm(), width(width), height(height), range(range){   
+ppm::ppm(int width, int height, int range): pnm(width,height,range){   
     this->map.resize(height);
 }
 
 ppm::~ppm(){
-}
-
-int ppm::format(){
-return 0;
-
 }
 
 
@@ -236,7 +243,7 @@ std::string ppm::print(){
     std::string result = "";
         for(int y=0; y < this->height; y++){
             for (int x = 0; x< this->width; x++){
-                result += this->map[y][x]->output() + " - ";
+                result += this->map[y][x]->outputRGB() + " - ";
             }
             result += "\n";
         }
@@ -248,7 +255,7 @@ std::ostream& operator<<(std::ostream& os, ppm& pnm){
     os << pnm.height << " " << pnm.width << " " << pnm.range << std::endl;
     for(int y=0; y < pnm.height; y++){
         for (int x = 0; x< pnm.width; x++){
-            os << pnm.map[y][x]->output() << " - ";
+            os << pnm.map[y][x]->outputRGB() << " - ";
         }
         os << std::endl;
     }
@@ -281,6 +288,6 @@ std::string ppm::getMagicNumber(){
     return "P6"; // P6 for BINARY - P3 for ASCII
 }
 
-void ppm::pushToRow(int targetRow, int valueR, int valueG, int valueB){
-    this->map[targetRow].push_back(std::move(std::make_unique<RGBpixel>(valueR,valueG,valueB)));
+void ppm::pushToRow(int targetRow, int val1, int val2, int val3){
+    this->map[targetRow].push_back(std::move(std::make_unique<pixel>(val1,val2,val3)));
 }
