@@ -4,66 +4,53 @@
 #include <vector>
 #include <stdio.h>
 #include <iostream>
-#include "./pixel.h"
 #include <memory>
 #include <bitset>
 
-class pnm
-{
-public:
-    pnm();
-    virtual ~pnm();
-    virtual std::string getMagicNumber() = 0;
-    int save(std::string targetFolder);
-    static std::unique_ptr<pnm> read(std::string * sourceFolder);
-    virtual int format() = 0;
-    virtual std::string print() = 0;
-private:
-};
+enum PNMtype{PPM, PGM, PBM};
 
-class pbm : public pnm{
+class PNM{
 public:
-    pbm(int width, int height);
-    ~pbm();
-    int format() override;
-    std::string getMagicNumber() override;
-    void pushToRow(int targetRow, bool value);
-    friend std::ostream& operator<<(std::ostream& os, pbm& pbm);
-    int save(std::string* fileName);
-    std::string print() override;
-private:
-    int width, height;
-    std::vector<std::vector<std::unique_ptr<BINARYpixel>>> map = {};
-};
+    PNM(int width = 0, int height = 0, PNMtype type = PNMtype::PPM, int range = 1);
+    ~PNM();
 
-class pgm : public pnm{
-public:
-    pgm(int width, int height, int range);
-    ~pgm();
-    int format() override;
-    std::string print();
-    friend std::ostream& operator<<(std::ostream& os, pgm& pgm);
-    int save(std::string* fileName);
-    std::string getMagicNumber() override;
-    void pushToRow(int targetRow, int grayValue);
-private:
-    int width, height, range;
-    std::vector< std::vector< std::unique_ptr<GRAYpixel>>> map;
-};
+    PNMtype getType();
+    int getWidth();
+    int getHeight();
+    int getRange();
+    std::string getMagicNumber();
 
-class ppm : public pnm{
-public:
-    ppm(int width, int height, int range);
-    ~ppm();
-    int format() override;
-    std::string print();
-    friend std::ostream& operator<<(std::ostream& os, ppm& ppm);
-    int save(std::string* fileName);
-    std::string getMagicNumber() override;
-    void pushToRow(int targetRow,int valueR, int valueG, int valueB);
+    int getPixelValueR(int row, int col);
+    int getPixelValueG(int row, int col);
+    int getPixelValueB(int row, int col);
+    int getPixelValueGRAY(int row, int col);
+    bool getPixelValueBINARY(int row, int col);
+
+    void setType(PNMtype newType);
+    void setWidth(int newWidth);
+    void setHeight(int newHeight);
+    void setRange(int newRange);
+
+    void setPixelValueR(int row, int col, int newR);
+    void setPixelValueG(int row, int col, int newG);
+    void setPixelValueB(int row, int col, int newB);
+    void setPixelValueRGB(int row, int col, int newR, int newG, int newB);
+    
+    void setPixelValueGRAY(int row, int col, int newGray);
+    void setPixelValueBINARY(int row, int col, bool newBit);
+
+    static void pnmtopng(std::string sourceFile, std::string targetFile);
+    static void pngtopnm(std::string sourceFile, std::string targetFile);
+    int read(std::string sourceFile); //sourceFile with extention
+    int save(std::string targetFile); //targetFile without extention
+    friend std::ostream& operator<<(std::ostream& os, PNM& PNM);
+
 private:
-    int width, height, range;
-    std::vector< std::vector< std::unique_ptr< RGBpixel>>> map;
+    int width;
+    int height;
+    PNMtype type;
+    int range;
+    std::vector<std::vector<std::vector<int>>> map;
 };
 
 #endif

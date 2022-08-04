@@ -5,128 +5,230 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-pnm::pnm(){
+PNM::PNM(int width, int height, PNMtype type, int range):
+width(width),height(height),type(type),range(range)
+{
+    this->map.resize(height);
+    for(int row=0; row<height; row++){
+        this->map[row].resize(width);
+        for(int col = 0; col < width; col++){
+            if(type==PNMtype::PPM){
+                this->map[row][col].resize(3);
+            }else{
+                this->map[row][col].resize(1);
+            }
+        }
+    }
 }
 
-pnm::~pnm(){
+PNM::~PNM(){
+
 }
 
-std::unique_ptr<pnm> pnm::read(std::string * sourceFile){
+PNMtype PNM::getType(){
+    return this->type;
+}
+
+int PNM::getWidth(){
+    return this->width;
+}
+
+int PNM::getHeight(){
+    return this->height;
+}
+
+int PNM::getRange(){
+    return this->range;
+}
+
+std::string PNM::getMagicNumber(){
+    switch(this->type){
+    case PNMtype::PPM: return "P6"; break;
+    case PNMtype::PGM: return "P5"; break;
+    case PNMtype::PBM: return "P4"; break;
+    }
+    return "";
+}
+
+int PNM::getPixelValueR(int row, int col){
+    if(row >= this->height or col >= this->width){
+        std::cout << "ERROR! : Requested Pixel out of bounds." <<std::endl;
+        return 0;
+    }
+    return this->map[row][col][0];
+}
+
+int PNM::getPixelValueG(int row, int col){
+    if(row >= this->height or col >= this->width){
+        std::cout << "ERROR! : Requested Pixel out of bounds." <<std::endl;
+        return 0;
+    }
+    return this->map[row][col][1];
+}
+
+int PNM::getPixelValueB(int row, int col){
+    if(row >= this->height or col >= this->width){
+        std::cout << "ERROR! : Requested Pixel out of bounds." <<std::endl;
+        return 0;
+    }
+    return this->map[row][col][2];
+}
+
+int PNM::getPixelValueGRAY(int row, int col){
+    if(row >= this->height or col >= this->width){
+        std::cout << "ERROR! : Requested Pixel out of bounds." <<std::endl;
+        return 0;
+    }
+    return this->map[row][col][0];
+}
+
+bool PNM::getPixelValueBINARY(int row, int col){
+    if(row >= this->height or col >= this->width){
+        std::cout << "ERROR! : Requested Pixel out of bounds." <<std::endl;
+        return 0;
+    }
+    if(this->map[row][col][0] ==0){
+        return false;
+    }
+    else{ 
+        return true;
+    }
+}
+
+void PNM::setType(PNMtype newType){
+    this->type = newType;
+    for(int row=0; row<this->height; row++){
+        for(int col = 0; col < this->width; col++){
+            if(newType==PNMtype::PPM){
+                this->map[row][col].resize(3);
+            }else{
+                this->map[row][col].resize(1);
+            }
+        }
+    }
+}
+
+void PNM::setWidth(int newWidth){
+    this->width = newWidth;
+    for(int row=0; row<this->height; row++){
+        this->map[row].resize(newWidth);
+    }
+}
+void PNM::setHeight(int newHeight){
+    this->height = newHeight;
+    this->map.resize(newHeight);
+}
+
+void PNM::setRange(int newRange){
+    this->range = newRange;
+}
+
+void PNM::setPixelValueR(int row, int col, int newR){
+    if(this->type == PNMtype::PPM){
+        this->map[row][col][0] = newR;
+    }else{
+        std::cout<< "ERROR! : Incompatible PNM Type -> setPixelValueR requires PPM" << std::endl;
+    }
+}
+void PNM::setPixelValueG(int row, int col, int newG){
+    if(this->type == PNMtype::PPM){
+        this->map[row][col][1] = newG;
+    }else{
+        std::cout<< "ERROR! : Incompatible PNM Type -> setPixelValueG requires PPM" << std::endl;
+    }
+}
+void PNM::setPixelValueB(int row, int col, int newB){
+    if(this->type == PNMtype::PPM){
+        this->map[row][col][2] = newB;
+    }else{
+        std::cout<< "ERROR! : Incompatible PNM Type -> setPixelValueB requires PPM" << std::endl;
+    }
+}
+
+void PNM::setPixelValueRGB(int row, int col, int newR, int newG, int newB){
+    if(this->type == PNMtype::PPM){
+        this->map[row][col][0] = newR;
+        this->map[row][col][1] = newG;
+        this->map[row][col][2] = newB;
+    }else{
+        std::cout<< "ERROR! : Incompatible PNM Type -> setPixelValueRGB requires PPM" << std::endl;
+    }
+}
+    
+void PNM::setPixelValueGRAY(int row, int col, int newGray){
+    if(this->type == PNMtype::PGM){
+        this->map[row][col][0] = newGray;
+    }else{
+        std::cout<< "ERROR! : Incompatible PNM Type -> setPixelValueGRAY requires PGM" << std::endl;
+    }
+}
+
+void PNM::setPixelValueBINARY(int row, int col,bool newBit){
+    if(this->type == PNMtype::PBM){
+        if(newBit){
+            this->map[row][col][0] = 1;
+        }else{
+            this->map[row][col][0] = 0;
+        }
+    }else{
+        std::cout<< "ERROR! : Incompatible PNM Type -> setPixelValueBINARY requires PBM" << std::endl;
+    }
+}
+
+void PNM::pnmtopng(std::string sourceFile, std::string targetFile)
+{
+    std::string command = "netpbm_bin\\.\\pnmtopng " + sourceFile + ">" + targetFile;
+    system(command.c_str());
+}
+
+void PNM::pngtopnm(std::string sourceFile, std::string targetFile)
+{
+    std::string command = "netpbm_bin\\.\\pngtopnm " + sourceFile + ">" + targetFile;
+    system(command.c_str());
+}
+
+//sourceFile with extention
+int PNM::read(std::string sourceFile){
     std::string pnmMagicNumberBuffer = "", widthBuffer="", heightBuffer="", rangeBuffer="";
     
     std::fstream file;
-    file.open(* sourceFile, std::fstream::in | std::fstream::binary);
+    file.open(sourceFile, std::fstream::in | std::fstream::binary);
     file >> pnmMagicNumberBuffer;
     file >> widthBuffer;
     file >> heightBuffer;
-
-    if(pnmMagicNumberBuffer == "P4"){ // Silem mi bastan yazalim su satiri 
-//        std::unique_ptr<pnm> ase(std::unique_ptr<pbm::pnm>(widthBuffer,heightBuffer));
-    } // daha yazmadim sonunu
-    else if (pnmMagicNumberBuffer == "P5"){ // BU PGM
+    if(pnmMagicNumberBuffer == "P4"){
+        this->setType(PNMtype::PBM);
+    }
+    else if (pnmMagicNumberBuffer == "P5"){
+        this->setType(PNMtype::PGM);
         file >> rangeBuffer;
     }
-    else if (pnmMagicNumberBuffer == "P6"){ //
+    else if (pnmMagicNumberBuffer == "P6"){
         file >> rangeBuffer;
-    }
-}
-
-
-/*
-    pnm->pnmMagicNumber = pnmMagicNumberBuffer;
-    pnm->width = stoi(widthBuffer);
-    pnm->height = stoi(heightBuffer);
-    pnm->range = stoi(rangeBuffer);
-
-    pnmFile >> noskipws;
-
-    vector<vector<pixel>> pixelMap;
-    vector<pixel> pixelRow;
-    pixel pixelBuffer;
-    unsigned char Red, Green, Blue;
-
-    for(int y=0; y < pnm->height; y++)
-        {
-        for(int x=0; x < pnm->width; x++){
-            
-            pnmFile >> Red;
-            if((int)Red == 10){
-                Red = 11;
+        this->setHeight(std::stoi(heightBuffer));
+        this->setWidth(std::stoi(widthBuffer));
+        this->setType(PNMtype::PPM);
+        this->setRange(std::stoi(rangeBuffer));
+        unsigned char R, G, B;
+        file >> std::noskipws;
+        for(int row=0; row<this->height; row++){
+            for(int col = 0; col<this->width; col++){
+                file >> R;
+                file >> G;
+                file >> B;
+                // new line char (10) leads to issues in Windows as it is replaced by \n\r (2 chars long)
+                //  instead of just \n while saving to a file. This is the workaround I have found.
+                if((int)R == 10){
+                    R = 11;
+                }
+                if((int)G == 10){
+                    G = 11;
+                }
+                if((int)B == 10){
+                    B = 11;
+                }
+                this->setPixelValueRGB(row,col,int(R),int(G),int(B));
             }
-            pixelBuffer.R = (int)Red;
-
-            
-            pnmFile >> Green;
-            if((int)Green == 10){
-                Green = 11;
-            }
-            pixelBuffer.G = (int) Green;
-
-            
-            pnmFile >> Blue;
-            if((int)Blue == 10){
-                Blue = 11;
-            }
-            pixelBuffer.B = (int)Blue;
-            
-
-            pixelRow.push_back(pixelBuffer);
-        }
-        pixelMap.push_back(pixelRow);
-        pixelRow = {};
-    }
-    pnm->pixelMap=pixelMap;
-    pnmFile.close();
-*/
-
-///////////////////////////////////////////////////////////////////////////
-
-pbm::pbm(int width, int height): pnm(), width(width), height(height){
-    this->map.resize(height);
-}
-
-pbm::~pbm(){
-}
-
-int pbm::format(){
-    return 0;
-}
-
-std::string pbm::print(){
-    std::string result = "";
-        for(int y=0; y < this->height; y++){
-            for (int x = 0; x< this->width; x++){
-                result += this->map[y][x]->output() + " - ";
-            }
-            result += "\n";
-        }
-    return result;
-}
-int pbm::save(std::string* fileName){
-    std::ofstream file;
-    file.open(* fileName, std::ios::out);
-    file << this->getMagicNumber();
-    file << ' ';
-    file << std::to_string(this->width) << ' ' << std::to_string(this->height);
-    file << ' ';
-    std::bitset<8> bitset ("00000000");
-    int bitsetCursor=0;
-    for(int y = 0; y < this->height; y++){
-        for(int x = 0; x < this->width; x++){
-            if(this->map[y][x]->getBit()){
-                bitset.set(7-bitsetCursor);
-            }else{
-                bitset.reset(7-bitsetCursor);
-            }
-            bitsetCursor++;
-            if(bitsetCursor==8){
-                file << uint8_t(bitset.to_ullong());
-                bitsetCursor = 0;
-            }
-        }
-        if(bitsetCursor !=0){
-            file << uint8_t(bitset.to_ullong());
-            bitsetCursor = 0;
         }
     }
     file.close();
@@ -134,153 +236,114 @@ int pbm::save(std::string* fileName){
     return 0;
 }
 
-std::ostream& operator<<(std::ostream& os, pbm& pnm){
-        os << pnm.getMagicNumber() << std::endl;
-        os << pnm.height << " " << pnm.width << std::endl;
-        for(int y=0; y < pnm.height; y++){
-            for (int x = 0; x< pnm.width; x++){
-                os << pnm.map[y][x]->output() << " - ";
-            }
-            os << std::endl;
-        }
-    return os;
-}
-
-std::string pbm::getMagicNumber(){
-    return "P4"; // P4 for BINARY - P1 for ASCII
-}
-
-void pbm::pushToRow(int targetRow, bool value){
-    this->map[targetRow].push_back(std::move(std::make_unique<BINARYpixel>(value)));
-}
-
-///////////////////////////////////////////////////////////////////////////
-
-pgm::pgm(int width, int height, int range): pnm(), width(width), height(height), range(range){   
-    this->map.resize(height);
-}
-
-pgm::~pgm(){
-}
-
-int pgm::format(){
-return 0;
-}
-
-int pgm::save(std::string* fileName){
+//targetFile without extention
+int PNM::save(std::string targetFile){
     std::ofstream file;
-    file.open(* fileName, std::ios::out);
-    file << this->getMagicNumber();
-    file << ' ';
-    file << std::to_string(this->width) << ' ' << std::to_string(this->height);
-    file << ' ';
-    file << std::to_string(this->range);
-    file << ' ';
-    for(int y = 0; y < this->height; y++){
-        for(int x = 0; x < this->width; x++){
-            file << uint8_t(this->map[y][x]->getGray());
-        }   
+    switch(this->type){
+
+        case PNMtype::PPM:
+            file.open(targetFile + ".ppm", std::ios::out);
+            file << this->getMagicNumber();
+            file << ' ';
+            file << std::to_string(this->width) << ' ' << std::to_string(this->height);
+            file << ' ';
+            file << std::to_string(this->range);
+            file << ' ';
+            int R,G,B;
+            for(int y = 0; y < this->height; y++){
+                for(int x = 0; x < this->width; x++){
+                    R = this->getPixelValueR(y,x);
+                    G = this->getPixelValueG(y,x);
+                    B = this->getPixelValueB(y,x);
+                    // new line char (10) leads to issues in Windows as it is replaced by \n\r (2 chars long)
+                    //  instead of just \n while saving to a file. This is the workaround I have found.
+                    if((int)R == 10){
+                        R = 11; 
+                        std::cout<< "Saved R char 10 on " << x << " - " << y << std::endl;
+                    }
+                    if((int)G == 10){
+                        G = 11;
+                        std::cout<< "Saved G char 10 on " << x << " - " << y << std::endl;
+                    }
+                    if((int)B == 10){
+                        B = 11;
+                        std::cout<< "Saved B char 10 on " << x << " - " << y << std::endl;
+                    }
+                    file << uint8_t(R);
+                    file << uint8_t(G);
+                    file << uint8_t(B);
+                }   
+            }
+            break;
+
+        case PNMtype::PGM:
+            file.open(targetFile +".pgm", std::ios::out);
+            file << this->getMagicNumber();
+            file << ' ';
+            file << std::to_string(this->width) << ' ' << std::to_string(this->height);
+            file << ' ';
+            file << std::to_string(this->range);
+            file << ' ';
+            for(int y = 0; y < this->height; y++){
+                for(int x = 0; x < this->width; x++){
+                    file << uint8_t(this->getPixelValueGRAY(y,x));
+                }   
+            }
+            break;
+
+        case PNMtype::PBM:
+            file.open(targetFile + ".pbm", std::ios::out);
+            file << this->getMagicNumber();
+            file << ' ';
+            file << std::to_string(this->width) << ' ' << std::to_string(this->height);
+            file << ' ';
+            std::bitset<8> bitset ("00000000");
+            int bitsetCursor=0;
+            for(int y = 0; y < this->height; y++){
+                for(int x = 0; x < this->width; x++){
+                    if(this->getPixelValueBINARY(y,x)){
+                        bitset.set(7-bitsetCursor);
+                    }else{
+                        bitset.reset(7-bitsetCursor);
+                    }
+                    bitsetCursor++;
+                    if(bitsetCursor==8){
+                        file << uint8_t(bitset.to_ullong());
+                        bitsetCursor = 0;
+                    }
+                }
+                if(bitsetCursor !=0){
+                    file << uint8_t(bitset.to_ullong());
+                    bitsetCursor = 0;
+                }
+            }
+            break;
     }
     file.close();
     if(file.fail()){return 1;}
     return 0;
 }
 
-std::string pgm::print(){
-    std::string result = "";
-        for(int y=0; y < this->height; y++){
-            for (int x = 0; x< this->width; x++){
-                result += this->map[y][x]->output() + " - ";
-            }
-            result += "\n";
-        }
-    return result;
-}
-
-std::ostream& operator<<(std::ostream& os, pgm& pnm){
-        os << pnm.getMagicNumber() << std::endl;
-        os << pnm.height << " " << pnm.width << " " << pnm.range << std::endl;
-        for(int y=0; y < pnm.height; y++){
-            for (int x = 0; x< pnm.width; x++){
-                os << pnm.map[y][x]->output() << " - ";
-            }
-            os << std::endl;
-        }
-    return os;
-}
-
-std::string pgm::getMagicNumber(){
-    return "P5"; // P5 for BINARY - P2 for ASCII
-}
-
-void pgm::pushToRow(int targetRow, int grayValue){
-    this->map[targetRow].push_back(std::move(std::make_unique<GRAYpixel>(grayValue)));
-}
-
-///////////////////////////////////////////////////////////////////////////
-
-ppm::ppm(int width, int height, int range): pnm(), width(width), height(height), range(range){   
-    this->map.resize(height);
-}
-
-ppm::~ppm(){
-}
-
-int ppm::format(){
-return 0;
-
-}
-
-
-std::string ppm::print(){
-    std::string result = "";
-        for(int y=0; y < this->height; y++){
-            for (int x = 0; x< this->width; x++){
-                result += this->map[y][x]->output() + " - ";
-            }
-            result += "\n";
-        }
-    return result;
-}
-
-std::ostream& operator<<(std::ostream& os, ppm& pnm){
-    os << pnm.getMagicNumber() << std::endl;
-    os << pnm.height << " " << pnm.width << " " << pnm.range << std::endl;
+std::ostream& operator<<(std::ostream& os, PNM& pnm){
+    os <<std::endl << pnm.getMagicNumber() << std::endl;
+    os << pnm.height << " " << pnm.width;
+    if(pnm.type!=PNMtype::PBM){
+        os << " " << pnm.range;
+    }
+    os << std::endl;
     for(int y=0; y < pnm.height; y++){
         for (int x = 0; x< pnm.width; x++){
-            os << pnm.map[y][x]->output() << " - ";
+            if(pnm.type==PNMtype::PPM){
+                os << " | " << pnm.getPixelValueR(y,x) << " - " << pnm.getPixelValueG(y,x) << " - " << pnm.getPixelValueB(y,x);
+            }else if(pnm.type==PNMtype::PGM){
+
+                os << " | " << pnm.getPixelValueGRAY(y,x);
+            }else if(pnm.type==PNMtype::PBM){
+
+                os << " | " << pnm.getPixelValueBINARY(y,x);
+            }
         }
-        os << std::endl;
+        os << " |" << std::endl;
     }
     return os;
-}
-
-int ppm::save(std::string* fileName){
-    std::ofstream file;
-    file.open(* fileName, std::ios::out);
-    file << this->getMagicNumber();
-    file << ' ';
-    file << std::to_string(this->width) << ' ' << std::to_string(this->height);
-    file << ' ';
-    file << std::to_string(this->range);
-    file << ' ';
-    for(int y = 0; y < this->height; y++){
-        for(int x = 0; x < this->width; x++){
-            file << uint8_t(this->map[y][x]->getR());
-            file << uint8_t(this->map[y][x]->getG());
-            file << uint8_t(this->map[y][x]->getB());
-        }   
-    }
-    //file << std::endl;
-    file.close();
-    if(file.fail()){return 1;}
-    return 0;
-}
-
-std::string ppm::getMagicNumber(){
-    return "P6"; // P6 for BINARY - P3 for ASCII
-}
-
-void ppm::pushToRow(int targetRow, int valueR, int valueG, int valueB){
-    this->map[targetRow].push_back(std::move(std::make_unique<RGBpixel>(valueR,valueG,valueB)));
 }
