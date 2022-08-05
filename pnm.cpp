@@ -5,7 +5,6 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD
 PNM::PNM(int width, int height, PNMtype type, int range):
 width(width),height(height),type(type),range(range)
 {
@@ -193,8 +192,8 @@ void PNM::pngtopnm(std::string sourceFile, std::string targetFile)
 //sourceFile with extention
 int PNM::read(std::string sourceFile){
     std::string pnmMagicNumberBuffer = "", widthBuffer="", heightBuffer="", rangeBuffer="";
+    
     std::fstream file;
-<<<<<<< HEAD
     file.open(sourceFile, std::fstream::in | std::fstream::binary);
     file >> pnmMagicNumberBuffer;
     file >> widthBuffer;
@@ -204,6 +203,10 @@ int PNM::read(std::string sourceFile){
     }
     else if (pnmMagicNumberBuffer == "P5"){
         this->setType(PNMtype::PGM);
+        file >> rangeBuffer;
+    }
+    else if (pnmMagicNumberBuffer == "P6"){
+        file >> rangeBuffer;
         this->setHeight(std::stoi(heightBuffer));
         this->setWidth(std::stoi(widthBuffer));
         this->setType(PNMtype::PPM);
