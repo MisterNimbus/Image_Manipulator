@@ -8,6 +8,7 @@
 #include <bitset>
 
 enum PNMtype{PPM, PGM, PBM};
+enum ColourChannel{Red,Green,Blue};
 
 class PNM{
 public:
