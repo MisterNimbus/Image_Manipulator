@@ -239,16 +239,13 @@ int PNM::read(std::string sourceFile){
 //targetFile without extention
 int PNM::save(std::string targetFile){
     std::ofstream file;
+    std::string output;
+    std::string buffer;
     switch(this->type){
 
         case PNMtype::PPM:
             file.open(targetFile + ".ppm", std::ios::out);
-            file << this->getMagicNumber();
-            file << ' ';
-            file << std::to_string(this->width) << ' ' << std::to_string(this->height);
-            file << ' ';
-            file << std::to_string(this->range);
-            file << ' ';
+            output = this->getMagicNumber() + ' ' + std::to_string(this->width) + ' ' + std::to_string(this->height)+ ' ' + std::to_string(this->range);
             int R,G,B;
             for(int y = 0; y < this->height; y++){
                 for(int x = 0; x < this->width; x++){
@@ -257,23 +254,24 @@ int PNM::save(std::string targetFile){
                     B = this->getPixelValueB(y,x);
                     // new line char (10) leads to issues in Windows as it is replaced by \n\r (2 chars long)
                     //  instead of just \n while saving to a file. This is the workaround I have found.
-                    if((int)R == 10){
+                    if(R == 10){
                         R = 11; 
                         std::cout<< "Saved R char 10 on " << x << " - " << y << std::endl;
                     }
-                    if((int)G == 10){
+                    if(G == 10){
                         G = 11;
                         std::cout<< "Saved G char 10 on " << x << " - " << y << std::endl;
                     }
-                    if((int)B == 10){
+                    if(B == 10){
                         B = 11;
                         std::cout<< "Saved B char 10 on " << x << " - " << y << std::endl;
                     }
-                    file << uint8_t(R);
-                    file << uint8_t(G);
-                    file << uint8_t(B);
+                    buffer += uint8_t(R);
+                    buffer += uint8_t(G);
+                    buffer += uint8_t(B);
                 }   
             }
+            file << output << buffer << std::endl;
             break;
 
         case PNMtype::PGM:
