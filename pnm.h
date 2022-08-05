@@ -8,6 +8,7 @@
 #include <bitset>
 
 enum PNMtype{PPM, PGM, PBM};
+enum ColourChannel{Red,Green,Blue};
 
 class PNM{
 public:
@@ -39,11 +40,15 @@ public:
     void setPixelValueGRAY(int row, int col, int newGray);
     void setPixelValueBINARY(int row, int col, bool newBit);
 
-    static void pnmtopng(std::string sourceFile, std::string targetFile);
-    static void pngtopnm(std::string sourceFile, std::string targetFile);
+    static void pnmtopng(std::string sourceFile, std::string targetFile);//sourceFile and targetFile with extention
+    static void pngtopnm(std::string sourceFile, std::string targetFile);//sourceFile and targetFile with extention
     int read(std::string sourceFile); //sourceFile with extention
     int save(std::string targetFile); //targetFile without extention
     friend std::ostream& operator<<(std::ostream& os, PNM& PNM);
+
+    void PPMtoPGM_average();
+    void PPMtoPGM_luminosity();
+    void PPMtoPGM_singleChannel(bool R, bool G, bool B);
 
 private:
     int width;

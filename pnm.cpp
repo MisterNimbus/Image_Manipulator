@@ -175,12 +175,14 @@ void PNM::setPixelValueBINARY(int row, int col,bool newBit){
     }
 }
 
+//sourceFile and targetFile with extention
 void PNM::pnmtopng(std::string sourceFile, std::string targetFile)
 {
     std::string command = "netpbm_bin\\.\\pnmtopng " + sourceFile + ">" + targetFile;
     system(command.c_str());
 }
 
+//sourceFile and targetFile with extention
 void PNM::pngtopnm(std::string sourceFile, std::string targetFile)
 {
     std::string command = "netpbm_bin\\.\\pngtopnm " + sourceFile + ">" + targetFile;
@@ -256,15 +258,15 @@ int PNM::save(std::string targetFile){
                     //  instead of just \n while saving to a file. This is the workaround I have found.
                     if(R == 10){
                         R = 11; 
-                        std::cout<< "Saved R char 10 on " << x << " - " << y << std::endl;
+                        std::cout<< "Ommitted R char(10) on " << x << " - " << y << std::endl;
                     }
                     if(G == 10){
                         G = 11;
-                        std::cout<< "Saved G char 10 on " << x << " - " << y << std::endl;
+                        std::cout<< "Ommitted G char(10) on " << x << " - " << y << std::endl;
                     }
                     if(B == 10){
                         B = 11;
-                        std::cout<< "Saved B char 10 on " << x << " - " << y << std::endl;
+                        std::cout<< "Ommitted B char(10) on " << x << " - " << y << std::endl;
                     }
                     buffer += uint8_t(R);
                     buffer += uint8_t(G);
@@ -276,17 +278,21 @@ int PNM::save(std::string targetFile){
 
         case PNMtype::PGM:
             file.open(targetFile +".pgm", std::ios::out);
-            file << this->getMagicNumber();
-            file << ' ';
-            file << std::to_string(this->width) << ' ' << std::to_string(this->height);
-            file << ' ';
-            file << std::to_string(this->range);
-            file << ' ';
+            output = this->getMagicNumber() + ' ' + std::to_string(this->width) + ' ' + std::to_string(this->height)+ ' ' + std::to_string(this->range);
+            int GRAY;
             for(int y = 0; y < this->height; y++){
                 for(int x = 0; x < this->width; x++){
-                    file << uint8_t(this->getPixelValueGRAY(y,x));
+                    GRAY = this->getPixelValueGRAY(y,x);
+                    // new line char (10) leads to issues in Windows as it is replaced by \n\r (2 chars long)
+                    //  instead of just \n while saving to a file. This is the workaround I have found.
+                    if(GRAY == 10){
+                        GRAY = 11;
+                        std::cout<< "Ommitted G char(10) on " << x << " - " << y << std::endl;
+                    }
+                    buffer += uint8_t(GRAY);
                 }   
             }
+            file << output << buffer << std::endl;
             break;
 
         case PNMtype::PBM:
@@ -344,4 +350,61 @@ std::ostream& operator<<(std::ostream& os, PNM& pnm){
         os << " |" << std::endl;
     }
     return os;
+}
+
+void PNM::PPMtoPGM_average(){
+    if(this->type != PNMtype::PPM){
+        std::cout << "ERROR! : PPMtoPGM_average() requires PPM as input" << std::endl;
+    }
+    int gray;
+    for(int row = 0; row < this->height; row++){
+        for(int col = 0; col < this->width; col++){
+            gray = (this->getPixelValueR(row,col) + 
+                    this->getPixelValueG(row,col) + 
+                    this->getPixelValueB(row,col)) / 3;
+            setPixelValueRGB(row,col,gray,gray,gray);
+        }
+    }
+    this->setType(PNMtype::PGM);
+}
+void PNM::PPMtoPGM_luminosity(){
+    if(this->type != PNMtype::PPM){
+        std::cout << "ERROR! : PPMtoPGM_luminosity() requires PPM as input" << std::endl;
+    }
+    int gray;
+    for(int row = 0; row < this->height; row++){
+        for(int col = 0; col < this->width; col++){
+            gray = (this->getPixelValueR(row,col)*0.2126 + 
+                    this->getPixelValueG(row,col)*0.7152 + 
+                    this->getPixelValueB(row,col)*0.0722);
+            setPixelValueRGB(row,col,gray,gray,gray);
+        }
+    }
+    this->setType(PNMtype::PGM);
+}
+
+void PNM::PPMtoPGM_singleChannel(bool R, bool G, bool B){
+    if(this->type != PNMtype::PPM){
+        std::cout << "ERROR! : PPMtoPGM_singleChannel requires PPM as input" << std::endl;
+    }
+    if(!R and !G and !B){
+        for(int row = 0; row < this->height; row++){
+            for(int col = 0; col < this->width; col++){
+            setPixelValueRGB(row,col,0,0,0);
+        }
+    }
+    this->setType(PNMtype::PGM);
+    return;
+    }
+    int gray;
+    for(int row = 0; row < this->height; row++){
+        for(int col = 0; col < this->width; col++){
+            gray = (this->getPixelValueR(row,col)*int(R) + 
+                    this->getPixelValueG(row,col)*int(G) + 
+                    this->getPixelValueB(row,col)*int(B))/
+                    (int(R)+int(G)+int(B));
+            setPixelValueRGB(row,col,gray,gray,gray);
+        }
+    }
+    this->setType(PNMtype::PGM);
 }
