@@ -4,73 +4,57 @@
 #include <vector>
 #include <stdio.h>
 #include <iostream>
-#include "./pixel.h"
 #include <memory>
 #include <bitset>
 
-class pbm;
-class pgm;
-class ppm;
+enum PNMtype{PPM, PGM, PBM};
 
-class pnm
-{
+class PNM{
 public:
-    pnm(int width, int height, int range);
-    virtual ~pnm();
-    static pnm * read(std::string * sourceFolder);
+    PNM(int width = 0, int height = 0, PNMtype type = PNMtype::PPM, int range = 1);
+    ~PNM();
+
+    PNMtype getType();
+    int getWidth();
+    int getHeight();
+    int getRange();
+    std::string getMagicNumber();
+
+    int getPixelValueR(int row, int col);
+    int getPixelValueG(int row, int col);
+    int getPixelValueB(int row, int col);
+    int getPixelValueGRAY(int row, int col);
+    bool getPixelValueBINARY(int row, int col);
+
+    void setType(PNMtype newType);
+    void setWidth(int newWidth);
+    void setHeight(int newHeight);
+    void setRange(int newRange);
+
+    void setPixelValueR(int row, int col, int newR);
+    void setPixelValueG(int row, int col, int newG);
+    void setPixelValueB(int row, int col, int newB);
+    void setPixelValueRGB(int row, int col, int newR, int newG, int newB);
     
-    virtual std::string getMagicNumber() = 0;
-    virtual std::string print() = 0;
-    virtual int save(std::string* fileName) = 0;
-    virtual void pushToRow(int TargetRow, int val1, int val2 = 0, int val3 = 0) = 0;
+    void setPixelValueGRAY(int row, int col, int newGray);
+    void setPixelValueBINARY(int row, int col, bool newBit);
 
-    friend std::ostream& operator<<(std::ostream& os, ppm& ppm);
-    friend std::ostream& operator<<(std::ostream& os, pgm& pgm);
-    friend std::ostream& operator<<(std::ostream& os, pbm& pbm);
+    static void pnmtopng(std::string sourceFile, std::string targetFile);//sourceFile and targetFile with extention
+    static void pngtopnm(std::string sourceFile, std::string targetFile);//sourceFile and targetFile with extention
+    int read(std::string sourceFile); //sourceFile with extention
+    int save(std::string targetFile); //targetFile without extention
+    friend std::ostream& operator<<(std::ostream& os, PNM& PNM);
 
+    void PPMtoPGM_average();
+    void PPMtoPGM_luminosity();
+    void PPMtoPGM_singleChannel(bool R, bool G, bool B);
 
-protected:
-    int width, height, range;
-    std::vector<std::vector<std::unique_ptr<pixel>>> map = {};
-};
-
-class pbm : public pnm{
-public:
-    pbm(int width, int height);
-    ~pbm();
-    std::string getMagicNumber() override;
-    int save(std::string* fileName) override;
-    std::string print() override;
-    void pushToRow(int targetRow, int val1, int val2 = 0, int val3 = 0) override;
-
-    friend std::ostream& operator<<(std::ostream& os, pbm& pbm);
 private:
-};
-
-class pgm : public pnm{
-public:
-    pgm(int width, int height, int range);
-    ~pgm();
-    std::string getMagicNumber() override;
-    int save(std::string* fileName) override;
-    std::string print() override;
-    void pushToRow(int targetRow, int val1, int val2 = 0, int val3 = 0) override;
-
-    friend std::ostream& operator<<(std::ostream& os, pgm& pgm);
-private:
-};
-
-class ppm : public pnm{
-public:
-    ppm(int width, int height, int range);
-    ~ppm();
-    std::string getMagicNumber() override;
-    int save(std::string* fileName) override;
-    std::string print() override;
-    void pushToRow(int targetRow, int val1, int val2 = 0, int val3 = 0) override;
-
-    friend std::ostream& operator<<(std::ostream& os, ppm& ppm);
-private:
+    int width;
+    int height;
+    PNMtype type;
+    int range;
+    std::vector<std::vector<std::vector<int>>> map;
 };
 
 #endif
