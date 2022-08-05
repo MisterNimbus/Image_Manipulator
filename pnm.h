@@ -42,13 +42,18 @@ public:
 
     static void pnmtopng(std::string sourceFile, std::string targetFile);//sourceFile and targetFile with extention
     static void pngtopnm(std::string sourceFile, std::string targetFile);//sourceFile and targetFile with extention
+    static void pnmtogif(std::string sourceFile, std::string targetFile);//sourceFile and targetFile with extention
+
     int read(std::string sourceFile); //sourceFile with extention
     int save(std::string targetFile); //targetFile without extention
+    
     friend std::ostream& operator<<(std::ostream& os, PNM& PNM);
 
     void PPMtoPGM_average();
     void PPMtoPGM_luminosity();
     void PPMtoPGM_singleChannel(bool R, bool G, bool B);
+
+    void PGMtoPBM_threshold(float percentage);
 
 private:
     int width;

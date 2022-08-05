@@ -408,3 +408,24 @@ void PNM::PPMtoPGM_singleChannel(bool R, bool G, bool B){
     }
     this->setType(PNMtype::PGM);
 }
+
+
+void PNM::PGMtoPBM_threshold(float percentage){
+    if(this->type != PNMtype::PGM){
+        std::cout << "ERROR! : PPMtoPGM_singleChannel requires PGM as input" << std::endl;
+    }
+    if(percentage <0 or percentage > 1){
+        std::cout << "ERROR! : percentage parameter must be between 0 and 1" << std::endl;
+    }
+    float threshold = percentage * this->range;
+    for(int row = 0; row < this->height; row++){
+        for(int col = 0; col < this->width; col++){
+            if(this->getPixelValueGRAY(row,col) >= threshold){
+                this->setPixelValueGRAY(row,col,0);
+            }else{
+                this->setPixelValueGRAY(row,col,1);
+            }
+        }
+    }
+    this->setType(PNMtype::PBM);
+}
