@@ -189,6 +189,20 @@ void PNM::pngtopnm(std::string sourceFile, std::string targetFile)
     system(command.c_str());
 }
 
+//sourceFile and targetFile with extention
+void PNM::ppmtogif(std::string sourceFile, std::string targetFile){
+    std::string command = "netpbm_bin\\.\\ppmtogif " + sourceFile + ">" + targetFile;
+    system(command.c_str());
+}
+
+void PNM::giftoanimatedgif(std::string sourceFiles, std::string targetFile, int delay){
+    std::string command = "gifsicle-1.92\\.\\gifsicle --loop -d " + std::to_string(delay) + " " + sourceFiles + ">" + targetFile;
+    system(command.c_str());
+}
+
+
+
+
 //sourceFile with extention
 int PNM::read(std::string sourceFile){
     std::string pnmMagicNumberBuffer = "", widthBuffer="", heightBuffer="", rangeBuffer="";
@@ -409,6 +423,33 @@ void PNM::PPMtoPGM_singleChannel(bool R, bool G, bool B){
     this->setType(PNMtype::PGM);
 }
 
+void PNM::PGMtoPPM(){
+    this->setType(PNMtype::PPM);
+    int gray;
+    for(int row = 0; row < this->height; row++){
+        for(int col = 0; col < this->width; col++){
+            gray = this->getPixelValueGRAY(row,col);
+            setPixelValueRGB(row,col,gray,gray,gray);
+        }
+    }
+}
+
+void PNM::PBMtoPPM(){
+    this->setType(PNMtype::PPM);
+    this->setRange(1);
+    int bit;
+    for(int row = 0; row < this->height; row++){
+        for(int col = 0; col < this->width; col++){
+            bit = int(this->getPixelValueBINARY(row,col));
+            setPixelValueRGB(row,col,bit,bit,bit);
+        }
+    }
+}
+
+void PNM::PBMtoPGM(){
+    this->setType(PNMtype::PGM);
+    this->setRange(1);
+}
 
 void PNM::PGMtoPBM_threshold(float percentage){
     if(this->type != PNMtype::PGM){
