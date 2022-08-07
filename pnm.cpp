@@ -50,6 +50,15 @@ std::string PNM::getMagicNumber(){
     return "";
 }
 
+std::string PNM::getExtention(){
+    switch(this->type){
+    case PNMtype::PPM: return ".ppm"; break;
+    case PNMtype::PGM: return ".pgm"; break;
+    case PNMtype::PBM: return ".pbm"; break;
+    }
+    return "";
+}
+
 int PNM::getPixelValueR(int row, int col){
     if(row >= this->height or col >= this->width){
         std::cout << "ERROR! : Requested Pixel out of bounds." <<std::endl;
@@ -192,6 +201,19 @@ void PNM::pngtopnm(std::string sourceFile, std::string targetFile)
 //sourceFile and targetFile with extention
 void PNM::ppmtogif(std::string sourceFile, std::string targetFile){
     std::string command = "netpbm_bin\\.\\ppmtogif " + sourceFile + ">" + targetFile;
+    system(command.c_str());
+}
+
+void PNM::pnm_quantisize(std::string sourceFile, int nColors, bool dithering){
+    std::string command = "netpbm_bin\\.\\pnmcolormap " + std::to_string(nColors) + " " + sourceFile + " > " + "palette.ppm";
+    std::cout << command << std::endl;
+    system(command.c_str());
+
+
+    command = "netpbm_bin\\.\\pnmremap --verbose -map=palette.ppm";
+    if(dithering){command += " -fs ";}
+    command += " " + sourceFile + ">" + "quanted_" + sourceFile;
+    std::cout << command << std::endl;
     system(command.c_str());
 }
 
@@ -436,11 +458,11 @@ void PNM::PGMtoPPM(){
 
 void PNM::PBMtoPPM(){
     this->setType(PNMtype::PPM);
-    this->setRange(1);
+    this->setRange(255);
     int bit;
     for(int row = 0; row < this->height; row++){
         for(int col = 0; col < this->width; col++){
-            bit = int(this->getPixelValueBINARY(row,col));
+            bit = 255 * int(this->getPixelValueBINARY(row,col));
             setPixelValueRGB(row,col,bit,bit,bit);
         }
     }
@@ -462,9 +484,9 @@ void PNM::PGMtoPBM_threshold(float percentage){
     for(int row = 0; row < this->height; row++){
         for(int col = 0; col < this->width; col++){
             if(this->getPixelValueGRAY(row,col) >= threshold){
-                this->setPixelValueGRAY(row,col,0);
-            }else{
                 this->setPixelValueGRAY(row,col,1);
+            }else{
+                this->setPixelValueGRAY(row,col,0);
             }
         }
     }
