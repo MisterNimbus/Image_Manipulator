@@ -187,38 +187,40 @@ void PNM::setPixelValueBINARY(int row, int col,bool newBit){
 //sourceFile and targetFile with extention
 void PNM::pnmtopng(std::string sourceFile, std::string targetFile)
 {
-    std::string command = "netpbm_bin\\.\\pnmtopng " + sourceFile + ">" + targetFile;
+    std::string command = "pnmtopng " + sourceFile + ">" + targetFile;
     system(command.c_str());
 }
 
 //sourceFile and targetFile with extention
 void PNM::pngtopnm(std::string sourceFile, std::string targetFile)
 {
-    std::string command = "netpbm_bin\\.\\pngtopnm " + sourceFile + ">" + targetFile;
+    std::string command = "pngtopnm " + sourceFile + ">" + targetFile;
     system(command.c_str());
 }
 
 //sourceFile and targetFile with extention
 void PNM::ppmtogif(std::string sourceFile, std::string targetFile){
-    std::string command = "netpbm_bin\\.\\ppmtogif " + sourceFile + ">" + targetFile;
+    std::string command = "ppmtogif " + sourceFile + ">" + targetFile;
     system(command.c_str());
 }
 
-void PNM::pnm_quantisize(std::string sourceFile, int nColors, bool dithering){
-    std::string command = "netpbm_bin\\.\\pnmcolormap " + std::to_string(nColors) + " " + sourceFile + " > " + "palette.ppm";
+void PNM::pnm_quantisize
+(std::string sourceFile, std::string targetFile, int nColors, bool dithering){
+
+    std::string command = "pnmcolormap " + std::to_string(nColors);
+    command += " " + sourceFile + " > " + "palette.ppm";
     std::cout << command << std::endl;
     system(command.c_str());
-
-
-    command = "netpbm_bin\\.\\pnmremap --verbose -map=palette.ppm";
+    command = "pnmremap -map=palette.ppm";
     if(dithering){command += " -fs ";}
-    command += " " + sourceFile + ">" + "quanted_" + sourceFile;
+    command += " " + sourceFile + ">" + targetFile;
     std::cout << command << std::endl;
     system(command.c_str());
+    system("rm -rf palette.ppm");
 }
 
 void PNM::giftoanimatedgif(std::string sourceFiles, std::string targetFile, int delay){
-    std::string command = "gifsicle-1.92\\.\\gifsicle --loop -d " + std::to_string(delay) + " " + sourceFiles + ">" + targetFile;
+    std::string command = "gifsicle --loop -d " + std::to_string(delay) + " " + sourceFiles + ">" + targetFile;
     system(command.c_str());
 }
 

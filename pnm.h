@@ -42,7 +42,7 @@ public:
 
     static void pnmtopng(std::string sourceFile, std::string targetFile); //sourceFile and targetFile with extention
     static void pngtopnm(std::string sourceFile, std::string targetFile); //sourceFile and targetFile with extention
-    static void pnm_quantisize(std::string sourceFile, int nColors, bool dithering = false);
+    static void pnm_quantisize(std::string sourceFile, std::string targetFile, int nColors, bool dithering = false);
     static void ppmtogif(std::string sourceFile, std::string targetFile); //sourceFile and targetFile with extention
     static void giftoanimatedgif(std::string sourceFiles, std::string targetFile, int delay = 50);
 

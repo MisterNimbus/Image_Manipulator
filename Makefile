@@ -9,4 +9,4 @@ main.o: main.cpp pnm.o
 pnm.o: pnm.cpp pnm.h
 	$(CC) $(CFLAGS) -c pnm.cpp
 clean:
-	rm -rf *.o main.exe *.ppm *.pbm *.pgm *Output.png *Output.gif
+	rm -rf *.o main.exe *.ppm *.pbm *.pgm *Output.png *Output.gif *Output*
