@@ -21,25 +21,47 @@ void threshold_sweep_gif(){
         gifFiles = gifFiles +file + std::to_string(i) + "Output.gif ";
         //PNM::pnmtopng( file +"Output.ppm", file + std::to_string(i) + "Output" + ".png");
     }
-    PNM::giftoanimatedgif(gifFiles,"Output.gif",10);
+    PNM::giftoanimatedgif(gifFiles,file + "_threshold_sweep_result.gif",10);
 }
+void quant_sweep_gif(){
 
-int main(){
     std::string file = "beans";
     //std::string file = "rainbow";
     std::string makeCleanINFIX = "Output";
 
     PNM * test = new PNM();
     PNM::pngtopnm(file + ".png", file + ".ppm");
+    std::string frameFiles = "";
     std::string gifFiles;
         test->read(file +".ppm");
-        //test->PPMtoPGM_luminosity();
-        //test->PGMtoPBM_threshold(0.06);
-        //test->PBMtoPPM();
+        //test->PPMtoPGM_average();
+        //test->PGMtoPPM();
         test->save( file + makeCleanINFIX);
-        PNM::pnm_quantisize(file + makeCleanINFIX + test->getExtention(), 256, true);
-        PNM::ppmtogif( file + makeCleanINFIX + ".ppm", file + std::to_string(0.06) + makeCleanINFIX + ".gif");
-        gifFiles = gifFiles +file + std::to_string(0.06) + makeCleanINFIX +".gif ";
-        PNM::pnmtopng( file + makeCleanINFIX + ".ppm", file + std::to_string(0.06) + makeCleanINFIX + ".png");
+        int nColor[] = {2,3,4,5,6,8,10,12,15,18,23,28,34,40,48};
+        for(int i = 0; i < 15 ; i++){
+        PNM::pnm_quantisize(file + makeCleanINFIX + test->getExtention(),"quant_" +file + makeCleanINFIX + std::to_string(nColor[i]) + test->getExtention(), nColor[i], true);
+        PNM::ppmtogif( "quant_" + file + makeCleanINFIX + std::to_string(nColor[i]) +  ".ppm", file + makeCleanINFIX + std::to_string(nColor[i]) +  ".gif");
+        frameFiles = frameFiles +file + makeCleanINFIX + std::to_string(nColor[i]) + ".gif ";
+        }
+    PNM::giftoanimatedgif(frameFiles,file +"_quant_sweep_result.gif",25);
+}
+
+void quant_png(std::string file, int nColor, bool dither){
+
+    std::string makeCleanINFIX = "Output";
+
+    PNM * test = new PNM();
+    PNM::pngtopnm(file + ".png", file + ".ppm");
+    std::string gifFiles;
+    test->read(file +".ppm");
+    test->save( file + makeCleanINFIX);
+    PNM::pnm_quantisize(file + makeCleanINFIX + test->getExtention(),"quant_" +file + makeCleanINFIX +test->getExtention(), nColor, true);
+    PNM::pnmtopng( "quant_" + file + makeCleanINFIX + ".ppm", file +"_quant_"+ std::to_string(nColor) + "_" + std::to_string(dither) + ".gif");
+
+}
+
+int main(){
+    //quant_png("beans",15,true);
+    quant_sweep_gif();
     return 0;
 }
