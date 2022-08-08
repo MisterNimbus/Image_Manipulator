@@ -51,6 +51,8 @@ public:
     
     friend std::ostream& operator<<(std::ostream& os, PNM& PNM);
 
+    void invert();
+
     void PPMtoPGM_average();
     void PPMtoPGM_luminosity();
     void PPMtoPGM_singleChannel(bool R, bool G, bool B);
