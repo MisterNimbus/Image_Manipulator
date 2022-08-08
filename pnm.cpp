@@ -390,6 +390,31 @@ std::ostream& operator<<(std::ostream& os, PNM& pnm){
     return os;
 }
 
+void PNM::invert(){
+    switch (this->type)
+    {
+    case PNMtype::PBM:
+        for (int row = 0; row < this->getHeight(); row++)
+            for (int col = 0; col < this->getWidth(); col++)
+                this->setPixelValueBINARY(row,col,!this->getPixelValueBINARY(row,col));
+        break;
+    case PNMtype::PGM:
+        for (int row = 0; row < this->getHeight(); row++)
+            for (int col = 0; col < this->getWidth(); col++)
+                this->setPixelValueGRAY(row,col,(this->getRange() - this->getPixelValueGRAY(row,col)));
+        break;
+    case PNMtype::PPM:
+        for (int row = 0; row < this->getHeight(); row++)
+            for (int col = 0; col < this->getWidth(); col++){
+                this->setPixelValueR(row,col,(this->getRange() - this->getPixelValueR(row,col)));
+                this->setPixelValueG(row,col,(this->getRange() - this->getPixelValueG(row,col)));
+                this->setPixelValueB(row,col,(this->getRange() - this->getPixelValueB(row,col)));
+            }
+        break;
+    }
+
+}
+
 void PNM::PPMtoPGM_average(){
     if(this->type != PNMtype::PPM){
         std::cout << "ERROR! : PPMtoPGM_average() requires PPM as input" << std::endl;
