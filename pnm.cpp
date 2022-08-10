@@ -118,10 +118,16 @@ void PNM::setType(PNMtype newType){
 }
 
 void PNM::setWidth(int newWidth){
-    this->width = newWidth;
-    for(int row=0; row<this->height; row++){
-        this->map[row].resize(newWidth);
+    if(this->getType()==PNMtype::PPM){
+        for(int row=0; row<this->height; row++){
+            this->map[row].resize(newWidth,{0,0,0});
+        }
+    }else{
+        for(int row=0; row<this->height; row++){
+            this->map[row].resize(newWidth,{0});
+        }
     }
+    this->width = newWidth;
 }
 void PNM::setHeight(int newHeight){
     this->height = newHeight;
@@ -224,7 +230,20 @@ void PNM::giftoanimatedgif(std::string sourceFiles, std::string targetFile, int 
     system(command.c_str());
 }
 
+void PNM::colorMap(std::string sourceFile, std::string targetFile, int nColors){
+    std::string command = "pnmcolormap " + std::to_string(nColors);
+    command += " " + sourceFile + " > " + targetFile + ".ppm";
+    std::cout << command << std::endl;
+    system(command.c_str());
+}
 
+void PNM::reMap(std::string sourceFile, std::string targetFile, std::string paletteFile, bool dithering){
+    std::string command = "pnmremap -map=" + paletteFile;
+    if(dithering){command += " -fs ";}
+    command += " " + sourceFile + ">" + targetFile;
+    std::cout << command << std::endl;
+    system(command.c_str());
+}
 
 
 //sourceFile with extention
@@ -311,7 +330,7 @@ int PNM::save(std::string targetFile){
                     buffer += uint8_t(B);
                 }   
             }
-            file << output << buffer << std::endl;
+            file << output << std::endl << buffer << std::endl;
             break;
 
         case PNMtype::PGM:
@@ -367,8 +386,8 @@ int PNM::save(std::string targetFile){
 }
 
 std::ostream& operator<<(std::ostream& os, PNM& pnm){
-    os <<std::endl << pnm.getMagicNumber() << std::endl;
-    os << pnm.height << " " << pnm.width;
+    os <<std::endl << " " << pnm.getMagicNumber() << std::endl;
+    os << " " << pnm.height << " " << pnm.width;
     if(pnm.type!=PNMtype::PBM){
         os << " " << pnm.range;
     }
@@ -518,4 +537,60 @@ void PNM::PGMtoPBM_threshold(float percentage){
         }
     }
     this->setType(PNMtype::PBM);
+}
+
+PNM * PNM::createPalette(){
+    PNM * pnm = new PNM(0, 1, PNMtype::PPM, 255);
+    return pnm;
+}
+
+void PNM::addColorToPalette(int R, int G, int B){
+    if(this->getWidth() == 256){
+        std::cout << "WARNING! : Palette might no longer be compatible with gif format. (more than 256 colors)" << std::endl;
+    }
+    this->setWidth(this->getWidth()+1);
+    this->setPixelValueRGB(0,this->width-1,R,G,B);
+}
+
+void PNM::removeColorFromPalette(int R,int G, int B){
+    int replacementColor[3];
+    bool replacementFound = false;
+    bool colorRemoved = false;
+    for (int col = 0; col < this->getWidth(); col++)
+    {
+        if( 
+            this->getPixelValueR(0,col) != R or 
+            this->getPixelValueG(0,col) != G or 
+            this->getPixelValueB(0,col) != B 
+        ){
+            replacementColor[0] = this->getPixelValueR(0,col);
+            replacementColor[1] = this->getPixelValueG(0,col);
+            replacementColor[2] = this->getPixelValueB(0,col);
+            replacementFound = true;
+            break;
+        }
+    }
+    if(replacementFound){
+        for (int col = 0; col < this->getWidth(); col++)
+        {
+            if( 
+            this->getPixelValueR(0,col) == R and
+            this->getPixelValueG(0,col) == G and 
+            this->getPixelValueB(0,col) == B 
+            ){
+                this->setPixelValueRGB
+                (0,col,replacementColor[0],replacementColor[1],replacementColor[2]);
+                colorRemoved = true;
+            }
+        }
+        
+    }else{
+        this->setWidth(0);
+        std::cout << " WARNING! : Palette is now empty." << std::endl;
+        return;
+    }
+
+    if(!colorRemoved){
+        std::cout << " WARNING! : Color to be removed was not found in the palette." << std::endl;
+    }
 }

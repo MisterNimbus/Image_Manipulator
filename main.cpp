@@ -72,13 +72,41 @@ void quant_png(std::string file, int nColor, bool dither){
     test->read(file +".ppm");
     test->save( file + makeCleanINFIX);
     PNM::pnm_quantisize(file + makeCleanINFIX + test->getExtention(),"quant_" +file + makeCleanINFIX +test->getExtention(), nColor, true);
-    PNM::pnmtopng( "quant_" + file + makeCleanINFIX + ".ppm", file +"_quant_"+ std::to_string(nColor) + "_" + std::to_string(dither) + ".gif");
+    PNM::pnmtopng( "quant_" + file + makeCleanINFIX + ".ppm", file +"_quant_"+ std::to_string(nColor) + "_" + std::to_string(dither) + ".png");
 
+}
+
+void custom_palette(std::string file){
+    std::string makeCleanINFIX = "Output";
+
+    PNM * palette = PNM::createPalette();
+    palette->addColorToPalette(247, 220, 129);
+    palette->addColorToPalette(78, 28, 128);
+    palette->addColorToPalette(0,0,0);
+    palette->addColorToPalette(255, 255, 255);
+    palette->removeColorFromPalette(255,255,255);
+    palette->save("palette_"+ makeCleanINFIX);
+
+
+    PNM * test = new PNM();
+    PNM::pngtopnm(file + ".png", file + ".ppm");
+    test->reMap(file + ".ppm", file + makeCleanINFIX + ".ppm", "palette_" + makeCleanINFIX + ".ppm", true);
+    PNM::pnmtopng( file + makeCleanINFIX + ".ppm", file +"_customPalette.png");
+}
+
+void palette_Test(){
+    PNM * palette = PNM::createPalette();
+    std::cout << *palette << std::endl;
+    palette->addColorToPalette(247, 220, 129);
+    palette->addColorToPalette(78, 28, 128);
+    std::cout << *palette;
+    palette->save("palette");
 }
 
 int main(){
     //quant_png("beans",15,true);
     //quant_wide_sweep_gif("beans",false,20);
     //threshold_sweep_gif("beans", 10);
+    custom_palette("beans");
     return 0;
 }

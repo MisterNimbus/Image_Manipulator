@@ -42,6 +42,8 @@ public:
 
     static void pnmtopng(std::string sourceFile, std::string targetFile); //sourceFile and targetFile with extention
     static void pngtopnm(std::string sourceFile, std::string targetFile); //sourceFile and targetFile with extention
+    static void colorMap(std::string sourceFile, std::string targetFile, int nColors);
+    static void reMap(std::string sourceFile, std::string targetFile, std::string paletteFile, bool dithering);
     static void pnm_quantisize(std::string sourceFile, std::string targetFile, int nColors, bool dithering = false);
     static void ppmtogif(std::string sourceFile, std::string targetFile); //sourceFile and targetFile with extention
     static void giftoanimatedgif(std::string sourceFiles, std::string targetFile, int delay = 50);
@@ -62,6 +64,10 @@ public:
     void PBMtoPGM();
 
     void PGMtoPBM_threshold(float percentage);
+    
+    static PNM * createPalette();
+    void addColorToPalette(int R, int G, int B);
+    void removeColorFromPalette(int R, int G, int B);
 
 
 private:
