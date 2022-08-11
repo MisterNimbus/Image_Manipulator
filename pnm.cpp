@@ -222,7 +222,7 @@ void PNM::pnm_quantisize
     command += " " + sourceFile + ">" + targetFile;
     std::cout << command << std::endl;
     system(command.c_str());
-    system("rm -rf palette.ppm");
+    //system("rm -rf palette.ppm");
 }
 
 void PNM::giftoanimatedgif(std::string sourceFiles, std::string targetFile, int delay){
