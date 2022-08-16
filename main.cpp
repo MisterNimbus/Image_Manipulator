@@ -101,6 +101,7 @@ void palette_Test(){
     palette->addColorToPalette(78, 28, 128);
     std::cout << *palette;
     palette->save("palette");
+    PNM::pnmtopng("palette.ppm","palette.png");
 }
 
 void gradient_palette(std::string file, int frameDuration){
@@ -122,7 +123,7 @@ void gradient_palette(std::string file, int frameDuration){
         palette->addColorToPalette(startingColor1[0],startingColor1[1],startingColor1[2] + i*5);
         palette->removeColorFromPalette(startingColor2[0],startingColor2[1],startingColor2[2] - (i-1)*5);
         palette->addColorToPalette(startingColor2[0],startingColor2[1],startingColor2[2] - i*5);
-        palette->save("palette_"+ makeCleanINFIX);
+        palette->save("palette_"+ makeCleanINFIX, true);
         
         PNM::reMap(file + ".ppm", file + makeCleanINFIX + std::to_string(i)+ ".ppm", "palette_" + makeCleanINFIX + ".ppm", true);
         PNM::ppmtogif( file + makeCleanINFIX + std::to_string(i) +  ".ppm", file + makeCleanINFIX + std::to_string(i) +  ".gif");
@@ -136,12 +137,22 @@ void gradient_palette(std::string file, int frameDuration){
     PNM::giftoanimatedgif(frameFiles,file +"_palette_sweep_result.gif",frameDuration);
 }
 
+void NETPBMtest(std::string file){
+    std::string makeCleanINFIX = "Output";
+    PNM::pngtopnm( file + ".png", file + "_unchanged_" + makeCleanINFIX + ".ppm");
+    PNM::pnmtopng( file + "_unchanged_" + makeCleanINFIX + ".ppm", file + "_unchanged_" + makeCleanINFIX + ".png");
+}
+
+
 int main(){
-    //quant_png("beans",15,true);
-    //quant_sweep_gif();
-    //threshold_sweep_gif("beans", 10);
-    quant_wide_sweep_gif("beans", true, 20);
-    //custom_palette("beans");
-    //gradient_palette("beans", 10);
+    NETPBMtest("beans");
+    palette_Test();
+    quant_png("beans",2,true);
+    quant_sweep_gif();
+    quant_wide_sweep_gif("beans",true, 20);
+    threshold_sweep_gif("beans", 10);
+    custom_palette("beans");
+    gradient_palette("beans", 10);
+    
     return 0;
 }

@@ -49,7 +49,7 @@ public:
     static void giftoanimatedgif(std::string sourceFiles, std::string targetFile, int delay = 50);
 
     int read(std::string sourceFile); //sourceFile with extention
-    int save(std::string targetFile); //targetFile without extention
+    int save(std::string targetFile, bool palette = false); //targetFile without extention
     
     friend std::ostream& operator<<(std::ostream& os, PNM& PNM);
 

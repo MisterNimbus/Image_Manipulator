@@ -296,7 +296,7 @@ int PNM::read(std::string sourceFile){
 }
 
 //targetFile without extention
-int PNM::save(std::string targetFile){
+int PNM::save(std::string targetFile, bool palette){
     std::ofstream file;
     std::string output;
     std::string buffer;
@@ -330,7 +330,11 @@ int PNM::save(std::string targetFile){
                     buffer += uint8_t(B);
                 }   
             }
+            if(palette){
+            file << output << " " << buffer << std::endl;
+            }else{
             file << output << buffer << std::endl;
+            }
             break;
 
         case PNMtype::PGM:
