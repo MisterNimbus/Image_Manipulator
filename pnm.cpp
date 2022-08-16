@@ -330,7 +330,7 @@ int PNM::save(std::string targetFile){
                     buffer += uint8_t(B);
                 }   
             }
-            file << output << std::endl << buffer << std::endl;
+            file << output << buffer << std::endl;
             break;
 
         case PNMtype::PGM:

@@ -138,8 +138,9 @@ void gradient_palette(std::string file, int frameDuration){
 
 int main(){
     //quant_png("beans",15,true);
-    quant_wide_sweep_gif("beans",true,20);
+    //quant_sweep_gif();
     //threshold_sweep_gif("beans", 10);
+    quant_wide_sweep_gif("beans", true, 20);
     //custom_palette("beans");
     //gradient_palette("beans", 10);
     return 0;
