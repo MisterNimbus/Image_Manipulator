@@ -57,3 +57,12 @@
   ⬆ Color remapping using linear changing custom palette (in this case khaki's blue value gets increased and purple's blue value decreased gradualy). Netpbm remap choses the closest color from given palette for each frame. At the end all gifs are put together to form an animated gif.
   </div>
 </p>
+
+<p align="center" >
+<img src="https://github.com/MisterNimbus/Image_Manipulator/blob/master/beans_rainbow_palette_result.gif" width="65%" />
+<div align="center">
+  ⬆ Color remapping using rotating color phasors palette and base image invertion. Color phasors can be thought as a sphere placed inside a cube, where ea ch axis represents a color channel. A point on the surface of the sphere keeps moving which results in a gradual color change that is not linear. The position of the point is expressed in spherical coordinates, which makes it easy to move the point by just theta and phi velocities. To prevent repetition velocities are randomized after every period. The colors' distance from the (0,0,0) point (which is black) is measured and compared and depending on the result the inverted or the original base image is remapped. This prevents the colors from switching places and ensures a gradual change for both fields. At the end all gifs are put together to form an animated gif.
+  </div>
+</p>
+
+
