@@ -24,5 +24,6 @@ public:
     int getR();
     int getG();
     int getB();
+    float getDistanceToBlack();
 };
 

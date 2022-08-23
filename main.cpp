@@ -153,63 +153,6 @@ void NETPBMtest(std::string file)
     PNM::pnmtopng(file + "_unchanged_" + makeCleanINFIX + ".ppm", file + "_unchanged_" + makeCleanINFIX + ".png");
 }
 
-void rainbow_palette_gif(std::string file, int threshold_percentage, int frameDuration, int frameCount)
-{
-    PNM *input = new PNM();
-    PNM::pngtopnm(file + ".png", file + ".ppm");
-    input->read(file + ".ppm");
-    input->PGMtoPBM_threshold(threshold_percentage);
-    input->PBMtoPPM();
-    input->save(file + "_beforeRemap");
-    input->~PNM();
-
-    for (int i = 0; i < frameCount; i++)
-    {
-    }
-}
-
-void rainbow_palette_sphere_in_cube(int sphere_center_X,
-                                    int sphere_center_Y,
-                                    int sphere_center_Z,
-                                    int sphere_radius,
-                                    int sphere_theta_start,
-                                    int sphere_phi_start,
-                                    int iteration,
-                                    std::string paletteName)
-{
-
-    PNM *palette = PNM::createPalette();
-
-    srand ( time(NULL) );
-    float sphere_theta_vel = (std::rand() % 5 + 1) * 0.1;
-    float sphere_phi_vel = (std::rand() % 5 + 1) * 0.1;
-        
-    float theta = sphere_theta_start;
-    float phi = sphere_phi_start;
-
-    for (int i = 0; i < iteration; i++)
-    {
-        int x = sphere_center_X + sphere_radius * sin(theta) * cos(phi);
-        int y = sphere_center_Y + sphere_radius * sin(theta) * sin(phi);
-        int z = sphere_center_Z + sphere_radius * cos(theta);
-
-        palette->addColorToPalette(x, y, z);
-
-        phi += sphere_phi_vel;
-        if(phi - 2*M_PI > 0){
-            phi -= 2*M_PI;
-            sphere_phi_vel = (rand() % 5 + 1) * 0.1;
-        }
-        theta += sphere_theta_vel;
-        if(theta - M_PI > 0){
-            theta -= M_PI;
-            sphere_theta_vel = (rand() % 5 + 1) * 0.1;
-        }
-    }
-    palette->save(paletteName, true);
-    //PNM::pnmtopng( paletteName + ".ppm","sphere.png");
-}
-
 void color_sphere_test(int sphere_center_X,
                                     int sphere_center_Y,
                                     int sphere_center_Z,
@@ -238,6 +181,73 @@ void color_sphere_test(int sphere_center_X,
     PNM::pnmtopng( paletteName + ".ppm","sphere_test.png");
 }
 
+void rainbow_palette_gif(   std::string file, 
+                            float threshold_percentage,
+                            int frameDuration,
+                            int frameCount)
+{
+
+    std::string makeCleanINFIX = "Output";
+    std::string frameFiles;
+    PNM *input = new PNM();
+    PNM::pngtopnm(file + ".png", file + ".ppm");
+    input->read(file + ".ppm");
+    input->PPMtoPGM_luminosity();
+    input->PGMtoPBM_threshold(threshold_percentage);
+    input->PBMtoPPM();
+    input->save(file + makeCleanINFIX + "_beforeRemap",true);
+
+    input->read(file + ".ppm");
+    input->PPMtoPGM_luminosity();
+    input->PGMtoPBM_threshold(threshold_percentage);
+    input->invert();
+    input->PBMtoPPM();
+    input->save(file + makeCleanINFIX + "_beforeRemap_inverted",true);
+
+    input->~PNM();
+
+    ColorSphere * sphere1 = new ColorSphere(120,
+                                            120,
+                                            120,
+                                            120,
+                                            0,
+                                            0);
+    ColorSphere * sphere2 = new ColorSphere(125,
+                                            125,
+                                            125,
+                                            125,
+                                            M_PI,
+                                            M_PI);
+    PNM * palette = PNM::createPalette();
+    palette->addColorToPalette(sphere1->getR(), sphere1->getG(), sphere1->getB());
+    palette->addColorToPalette(sphere2->getR(), sphere2->getG(), sphere2->getB());
+    for (int i = 0; i < frameCount; i++)
+    {
+        palette->save( "palette_" + makeCleanINFIX,true);
+
+        if(sphere1->getDistanceToBlack()>sphere2->getDistanceToBlack()){
+        PNM::reMap(file+ makeCleanINFIX + "_beforeRemap" + ".ppm", file + makeCleanINFIX + std::to_string(i) + ".ppm", "palette_" + makeCleanINFIX + ".ppm", true);
+        }else{
+        PNM::reMap(file+ makeCleanINFIX + "_beforeRemap" + "_inverted" + ".ppm", file + makeCleanINFIX + std::to_string(i) + ".ppm", "palette_" + makeCleanINFIX + ".ppm", true);
+        }
+        
+        PNM::ppmtogif(file + makeCleanINFIX + std::to_string(i) + ".ppm", file + makeCleanINFIX + std::to_string(i) + ".gif");
+        frameFiles = frameFiles + file + makeCleanINFIX + std::to_string(i) + ".gif ";
+
+        palette->removeColorFromPalette(sphere1->getR(), sphere1->getG(), sphere1->getB());
+        palette->removeColorFromPalette(sphere2->getR(), sphere2->getG(), sphere2->getB());
+        
+        sphere1->update();
+        sphere2->update();
+        
+        palette->addColorToPalette(sphere1->getR(), sphere1->getG(), sphere1->getB());
+        palette->addColorToPalette(sphere2->getR(), sphere2->getG(), sphere2->getB());
+
+    }
+    std::cout << frameFiles;
+    PNM::giftoanimatedgif(frameFiles, file + "_rainbow_palette_result.gif", frameDuration);
+}
+
 int main()
 {
 
@@ -249,16 +259,9 @@ int main()
     // threshold_sweep_gif("beans", 10);
     // custom_palette("beans");
     // gradient_palette("beans", 10);
-    // rainbow_palette_gif("beans", 50, 20, 100);
-    //rainbow_palette_sphere_in_cube( 120,120,120,120,0,0,200,"sphere");
-    color_sphere_test(120,
-                                    120,
-                                    120,
-                                    120,
-                                    0,
-                                    0,
-                                    200,
-                                    "sphere");
+    // rainbow_palette_sphere_in_cube( 120,120,120,120,0,0,200,"sphere");
+    // color_sphere_test(120,120,120,120,0,0,200,"sphere");
+     rainbow_palette_gif("beans", 0.54, 5, 400);
 
     return 0;
 }

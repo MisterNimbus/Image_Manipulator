@@ -16,8 +16,8 @@ ColorSphere::ColorSphere(int sphere_center_X,
                 sphere_phi_start(sphere_phi_start)
 {
     srand ( time(NULL) );
-    this->sphere_theta_vel = (rand() % 5 + 1) * 0.1;
-    this->sphere_phi_vel = (rand() % 5 + 1) * 0.1;
+    this->sphere_theta_vel = (rand() % 3 + 1) * 0.05;
+    this->sphere_phi_vel = (rand() % 3 + 1) * 0.05;
         
     this->theta = sphere_theta_start;
     this->phi = sphere_phi_start;
@@ -32,13 +32,13 @@ void ColorSphere::update()
 {
     this->phi += this->sphere_phi_vel;
     if(this->phi - 2*M_PI > 0){
-        this->phi -= 2*M_PI;
-        this->sphere_phi_vel = (rand() % 5 + 1) * 0.1;
+        //this->phi -= 2*M_PI;
+        this->sphere_phi_vel = (rand() % 3 + 1) * 0.05;
     }
     this->theta += this->sphere_theta_vel;
     if(this->theta - M_PI > 0){
-        this->theta -= M_PI;
-        this->sphere_theta_vel = (rand() % 5 + 1) * 0.1;
+        //this->theta -= M_PI;
+        this->sphere_theta_vel = -(rand() % 3 + 1) * 0.05;
     }
 }
 
@@ -55,4 +55,9 @@ int ColorSphere::getG()
 int ColorSphere::getB()
 {
     return this->sphere_center_Z + this->sphere_radius * cos(this->theta);
+}
+
+float ColorSphere::getDistanceToBlack()
+{
+    return sqrt(this->getR()*this->getR()+this->getB()*this->getB() + this->getG()*this->getG());
 }
